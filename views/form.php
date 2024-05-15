@@ -6,10 +6,14 @@
     <title>Title</title>
 </head>
 <body>
+<?php
+require_once $_SERVER["DOCUMENT_ROOT"].'/www/rouholahoTest1/controllers/Controller.php';
+$ctrl = new Controller();
+?>
 <div>
 
     <h2>Submit Form</h2>
-    <form action="../controllers/Controller.php" method="get">
+    <form action="process.php" method="get">
         <label for="name">Name:</label>
         <input type="text" id="name" name="name" >
 
@@ -19,8 +23,6 @@
         <input type="submit" value="Submit">
     </form>
 
-
 </div>
-
 </body>
 </html>
