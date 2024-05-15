@@ -1,5 +1,6 @@
 <?php
-include $_SERVER['DOCUMENT_ROOT'].'/www/rouholahoTest1/models/Signal.php';
+include $_SERVER['DOCUMENT_ROOT'] . '/www/rouholahoTest1/models/Signal.php';
+
 //include "models/Signal.php";
 class Controller
 {
@@ -26,18 +27,28 @@ class Controller
     public static function addSignal($name, $address)
     {
         if (self::nameExist() && self::addressExist()) {
-            $signal = new Signal();
-            $signal->insertSignal($name, $address);
+            self::$signal = new Signal();
+            self::$signal->insertSignal($name, $address);
         } else
             echo "Undefined name parameter";
     }
 
-    public static function readAll(){
+    public static function readAll()
+    {
         self::$signal = new Signal();
         var_dump(self::$signal->readAll());
     }
 
+    public static function exportAsExcel()
+    {
+        self::$signal = new Signal();
+//        header("Content-type: application/vnd.ms-excel");
+//        header("Content-Disposition: attachment; filename=signals.xls");
+        echo self::$signal->getAllAsExcel();
+    }
+
 }
+
 //
 //
 //include "models/DataAccess.php";

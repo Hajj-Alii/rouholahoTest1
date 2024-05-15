@@ -8,7 +8,7 @@
 <body>
 <div class="login-container">
     <h2>Login</h2>
-    <form class="login-form" action="auth.php" method="post">
+    <form class="login-form" action="../controllers/auth.php" method="post">
         <label>
             <input type="text" name="username" placeholder="Username" required>
         </label>

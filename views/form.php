@@ -13,7 +13,7 @@ $ctrl = new Controller();
 <div>
 
     <h2>Submit Form</h2>
-    <form action="auth.php" method="get">
+    <form action="../controllers/auth.php" method="get">
         <label for="name">Name:</label>
         <input type="text" id="name" name="name" >
 

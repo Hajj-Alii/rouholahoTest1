@@ -18,12 +18,12 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         $_SESSION["username"] = $username;
 
         // Redirect to a protected page
-        header("Location: form.php");
+        header("Location: ../views/form.php");
         exit;
     } else {
         // Authentication failed, redirect back to login page with error message
         $_SESSION["error"] = "Invalid username or password.";
-        header("Location: login.php");
+        header("Location: ../views/login.php");
         exit;
     }
 }
