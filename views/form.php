@@ -9,7 +9,7 @@
 <div>
 
     <h2>Submit Form</h2>
-    <form action="../controllers/submit.php" method="get">
+    <form action="../controllers/Controller.php" method="get">
         <label for="name">Name:</label>
         <input type="text" id="name" name="name" >
 
