@@ -1,30 +1,40 @@
 <?php
-class Signal{
 
-    private $_Name;
+class Signal
+{
+    private static $data;
 
-    public function getName()
+
+    #region signals
+    private static $_signals = array();
+
+
+    public function insertSignal($name, $address)
     {
-        return $this->_Name;
-    }
-    public function setName($name)
-    {
-        $this->_Name = $name;
+        self::$data = new DataAccess();
+        try {
+            self::$data->connect();
+            $statement = self::$data::$pdo->prepare("INSERT INTO testdb1.signal (address, name) VALUES (:address, :name)");;
+            $statement->execute([':address' => $address, ':name' => $name]);
+        }
+        catch (PDOException $e){
+            echo "connection error: " . $e->getMessage();
+        }
     }
 
-    private $_Address;
+    public function readAll()
+    {
 
-    public function getAddress()
-    {
-        return $this->_Address;
-    }
-    public function setAddress($address)
-    {
-        $this->_Address = $address;
-    }
-    function __construct($name, $address)
-    {
-        $this->setName($name);
-        $this->setAddress($address);
+        self::$data = new DataAccess();
+        try{
+            self::$data->connect();
+            $statement = self::$pdo->query("SELECT * FROM testdb1.signal");
+            while ($row = $statement->fetch(PDO::FETCH_ASSOC))
+                self::$_signals[$row['name']] = $row['address'];
+            return self::$_signals;
+        }
+        catch (PDOException $exception){
+            echo "connection error: " . $exception->getMessage();
+        }
     }
 }

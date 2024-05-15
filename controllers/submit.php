@@ -1,5 +1,6 @@
 <?php
-include "DatabaseLayer.php";
+
+include "models/DataAccess.php";
 $nameAvailable = $addressAvailable = false;
 
 if (isset($_GET["name"]) && !empty($_GET["name"])) {
@@ -18,6 +19,6 @@ if (isset($_GET["address"]) && !empty($_GET["address"])) {
 }
 
 if ($nameAvailable && $addressAvailable)
-    DatabaseLayer::insertSignal($_GET["name"], (int)$_GET["address"]);
+    DataAccess::insertSignal($_GET["name"], (int)$_GET["address"]);
 ?>
 
