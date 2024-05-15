@@ -2,7 +2,6 @@
 session_start();
 
 // Include database connection
-include_once("db_connection.php");
 
 // Dummy username and password (Replace these with your real credentials)
 $valid_username = "user";
@@ -19,7 +18,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         $_SESSION["username"] = $username;
 
         // Redirect to a protected page
-        header("Location: welcome.php");
+        header("Location: form.php");
         exit;
     } else {
         // Authentication failed, redirect back to login page with error message
