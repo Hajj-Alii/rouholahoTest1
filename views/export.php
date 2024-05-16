@@ -8,8 +8,8 @@
     <title>Document</title>
 </head>
 <body>
-<h2>Call Method Example</h2>
-<form method="post">
+<!--<h2>Call Method Example</h2>-->
+<form method="post" action="exportHandle.php">
     <button type="submit" name="call_method">Call Method</button>
 </form>
 <?php

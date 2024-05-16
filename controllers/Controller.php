@@ -36,15 +36,22 @@ class Controller
     public static function readAll()
     {
         self::$signal = new Signal();
-        var_dump(self::$signal->readAll());
+//        echo self::$signal->readAll();
+        $array = self::$signal->readAll();
+
+        foreach ($array as $address => $nama)
+            $array[$address] = $nama;
+
+        var_dump($array);
     }
 
     public static function exportAsExcel()
     {
         self::$signal = new Signal();
-//        header("Content-type: application/vnd.ms-excel");
-//        header("Content-Disposition: attachment; filename=signals.xls");
+
         echo self::$signal->getAllAsExcel();
+        header("Content-type: application/vnd.ms-excel");
+        header("Content-Disposition: attachment; filename=signals.xls");
     }
 
 }

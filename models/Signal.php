@@ -6,8 +6,8 @@ class Signal
     // DataAccess object
     public static $data;
 
-
-    private static $_signals = array();
+//associative array of signal records
+    private static $_signals;
 
 
     public function insertSignal($name, $address)
@@ -26,17 +26,18 @@ class Signal
     public function readAll()
     {
         self::$data = new DataAccess();
+        self::$_signals = array();
         try {
             self::$data->connect();
             $statement = self::$data::$pdo->query("SELECT * FROM testdb1.signal;");
             $rows = $statement->fetchAll(PDO::FETCH_ASSOC);
-            foreach ($rows as $address => $name)
-                self::$_signals[$address] = $name;
-//            foreach ($rows as $row)
-//                 $row['address'];
-//            while ($row = $statement->fetch(PDO::FETCH_ASSOC)
-//                self::$_signals[$row['name']] = $row['address'];
+
+
+            foreach ($rows as $row)
+                self::$_signals[$row["Address"]] = $row["Name"];
+
             return self::$_signals;
+
         } catch (PDOException $exception) {
             echo "connection error: " . $exception->getMessage();
         }
@@ -46,15 +47,11 @@ class Signal
     {
         self::$data = new DataAccess();
         try {
-            self::$data->connect();
-            $statement = self::$data::$pdo->query("SELECT * FROM testdb1.signal;");
-            $rows = $statement->fetchAll(PDO::FETCH_ASSOC);
-
-            // Excel file content
-            $data = "Address\tName"; // Column headers
-
+           $rows = self::readAll();
+            $data = "Address\tName\n"; // Column headers
+//            var_dump($rows);
             foreach ($rows as $address => $name)
-                $data .= "\t" . $address . "\t" . (int)$name . "\n";
+                $data .= $address . "\t" . $name . "\n";
 
             return $data;
         } catch (PDOException $exception) {
