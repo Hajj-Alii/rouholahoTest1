@@ -10,12 +10,12 @@
 <body>
 <!--<h2>Call Method Example</h2>-->
 <form method="post" action="exportHandle.php">
-    <button type="submit" name="call_method">Call Method</button>
+    <button type="submit" name="Export">Export</button>
 </form>
 <?php
 require_once $_SERVER["DOCUMENT_ROOT"].'/www/rouholahoTest1/controllers/Controller.php';
 $ctrl = new Controller();
-if(isset($_POST['call_method'])) {
+if(isset($_POST['Export'])) {
     $ctrl::exportAsExcel();
 }
 
