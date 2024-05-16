@@ -19,7 +19,7 @@ class Signal
             $statement->execute([':address' => $address, ':name' => $name]);
 
         } catch (PDOException $e) {
-            echo "connection error: " . $e->getMessage();
+            echo "connection error  : " . $e->getMessage();
         }
     }
 
@@ -47,7 +47,7 @@ class Signal
     {
         self::$data = new DataAccess();
         try {
-           $rows = self::readAll();
+            $rows = self::readAll();
             $data = "Address\tName\n"; // Column headers
 //            var_dump($rows);
             foreach ($rows as $address => $name)

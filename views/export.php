@@ -8,13 +8,12 @@
     <title>Document</title>
 </head>
 <body>
-<!--<h2>Call Method Example</h2>-->
 <form method="post" action="exportHandle.php">
     <button type="submit" name="Export">Export</button>
 </form>
 <?php
-require_once $_SERVER["DOCUMENT_ROOT"].'/www/rouholahoTest1/controllers/Controller.php';
-$ctrl = new Controller();
+require_once $_SERVER["DOCUMENT_ROOT"].'/www/rouholahoTest1/controllers/SignalController.php';
+$ctrl = new SignalController();
 if(isset($_POST['Export'])) {
     $ctrl::exportAsExcel();
 }

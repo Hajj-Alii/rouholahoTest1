@@ -2,7 +2,7 @@
 include $_SERVER['DOCUMENT_ROOT'] . '/www/rouholahoTest1/models/Signal.php';
 
 //include "models/Signal.php";
-class Controller
+class SignalController
 {
     public static $nameAvailable = false;
     public static $addressAvailable = false;
@@ -36,11 +36,10 @@ class Controller
     public static function readAll()
     {
         self::$signal = new Signal();
-//        echo self::$signal->readAll();
         $array = self::$signal->readAll();
 
-        foreach ($array as $address => $nama)
-            $array[$address] = $nama;
+        foreach ($array as $address => $name)
+            $array[$address] = $name;
 
         var_dump($array);
     }
