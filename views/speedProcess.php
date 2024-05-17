@@ -5,43 +5,27 @@ use \Morilog\Jalali\Jalalian;
 $ctrl = new SpeedController();
 
 
- // Create a Jalalian object
-// $jalaliDate = Jalalian::fromFormat('Y-m-d H:i:s', 'now');
-// $date = Jalalian::forge('now')->getTimestamp();
-//
-// $nowTimeStamp = Jalalian::forge('now')->getTimestamp();
-// $date = jdate($nowTimeStamp);
-// $fiveMinAgo = $nowTimeStamp - 5 * 60;
-// $nowDateTime = Jalalian::now();
-// $nowDate = jdate($nowTimeStamp);
-// echo $nowTimeStamp."<br/>";
-// echo $nowDateTime."<br/>";
-//// echo $nowDateTime;
-// echo $fiveMinAgo;
-
-// // Display the original date and time
-// echo "Original Jalali DateTime: " . $jalaliDate->format('Y-m-d H:i:s') . "\n";
-//
-// // Convert the Jalali date to a Unix timestamp
-// $timestamp = $jalaliDate->getTimestamp();
-//
-// // Subtract the desired number of minutes (e.g., 10 minutes)
-// $timestamp -= 10 * 60; // 10 minutes * 60 seconds per minute
-//
-// // Convert the modified timestamp back to a Jalalian object
-// $modifiedJalaliDate = Jalalian::forge($timestamp);
-//
-// // Display the modified date and time
-// echo "Modified Jalali DateTime: " . $modifiedJalaliDate->format('Y/m/d H:i:s') . "\n";
-
-
- $timeZone = new DateTimeZone("Asia/Tehran");
+$timeZone = new DateTimeZone("Asia/Tehran");
 $nowDate = Jalalian::forge('now', $timeZone);
+//
+//
+// if ($ctrl::valuesExist(["spd5", "spd4", "spd3", "spd2", "spd1"]))
+//     echo "YES"; it was OK!
 
-$nowTimeStamp = $nowDate->getTimestamp();
-$fiveMinAgo = Jalalian::forge($nowTimeStamp - 5 * 60, $timeZone);
-echo "NOW IS : ".$nowDate."<br/>";
-echo "FIVE MIN AGO WAS : ".$fiveMinAgo;
+//if ($ctrl::valuesExist($_GET))
+//    echo "yes"; is bad
+//else echo "no";
+$keyArray = ["spd5", "spd4", "spd3", "spd2", "spd1"];
+$newArray = array();
+if($ctrl::valuesExist($keyArray))
+{
+//    echo "yes they all exist<br/>";
+    $normalArray = array_values($_GET);
+    $ctrl::addSpeeds_Items($normalArray, $nowDate, $timeZone);
+
+}
+
+//var_dump( $_GET);
 
 
 
