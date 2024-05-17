@@ -3,18 +3,49 @@ include_once $_SERVER["DOCUMENT_ROOT"]. "/www/rouholahoTest1/controllers/SpeedCo
 include  $_SERVER["DOCUMENT_ROOT"]. "/www/rouholahoTest1/"."vendor/autoload.php";
 use \Morilog\Jalali\Jalalian;
 $ctrl = new SpeedController();
-// $timezone = new DateTimeZone('Asia/Tehran');
 
-//
-// $date = \Morilog\Jalali\Jalalian::forge('now')->getTimestamp(); // 1333857600
-//echo jdate($date);
-// $date = new jDateTime(true, true, 'Asia/Tehran');
-//
-// echo $date->date("Y-m-d h:i:s", false, false)."\n";
 
-$timeZone = new DateTimeZone("Asia/Tehran");
-$newDate = Jalalian::forge('now', $timeZone);
-echo $newDate;
+ // Create a Jalalian object
+// $jalaliDate = Jalalian::fromFormat('Y-m-d H:i:s', 'now');
+// $date = Jalalian::forge('now')->getTimestamp();
+//
+// $nowTimeStamp = Jalalian::forge('now')->getTimestamp();
+// $date = jdate($nowTimeStamp);
+// $fiveMinAgo = $nowTimeStamp - 5 * 60;
+// $nowDateTime = Jalalian::now();
+// $nowDate = jdate($nowTimeStamp);
+// echo $nowTimeStamp."<br/>";
+// echo $nowDateTime."<br/>";
+//// echo $nowDateTime;
+// echo $fiveMinAgo;
+
+// // Display the original date and time
+// echo "Original Jalali DateTime: " . $jalaliDate->format('Y-m-d H:i:s') . "\n";
+//
+// // Convert the Jalali date to a Unix timestamp
+// $timestamp = $jalaliDate->getTimestamp();
+//
+// // Subtract the desired number of minutes (e.g., 10 minutes)
+// $timestamp -= 10 * 60; // 10 minutes * 60 seconds per minute
+//
+// // Convert the modified timestamp back to a Jalalian object
+// $modifiedJalaliDate = Jalalian::forge($timestamp);
+//
+// // Display the modified date and time
+// echo "Modified Jalali DateTime: " . $modifiedJalaliDate->format('Y/m/d H:i:s') . "\n";
+
+
+ $timeZone = new DateTimeZone("Asia/Tehran");
+$nowDate = Jalalian::forge('now', $timeZone);
+
+$nowTimeStamp = $nowDate->getTimestamp();
+$fiveMinAgo = Jalalian::forge($nowTimeStamp - 5 * 60, $timeZone);
+echo "NOW IS : ".$nowDate."<br/>";
+echo "FIVE MIN AGO WAS : ".$fiveMinAgo;
+
+
+
+
 //$ctrl::add5thSpeed('spd',$_GET['spd'], $newDate);
 
 
