@@ -1,12 +1,14 @@
- <?php
-include_once $_SERVER["DOCUMENT_ROOT"]. "/www/rouholahoTest1/controllers/SpeedController.php";
-include  $_SERVER["DOCUMENT_ROOT"]. "/www/rouholahoTest1/"."vendor/autoload.php";
+<?php
+include_once $_SERVER["DOCUMENT_ROOT"] . "/www/rouholahoTest1/controllers/SpeedController.php";
+include $_SERVER["DOCUMENT_ROOT"] . "/www/rouholahoTest1/" . "vendor/autoload.php";
+
 use \Morilog\Jalali\Jalalian;
+
 $ctrl = new SpeedController();
 
+//
+//$nowDate = Jalalian::forge('now', $timeZone);
 
-$timeZone = new DateTimeZone("Asia/Tehran");
-$nowDate = Jalalian::forge('now', $timeZone);
 //
 //
 // if ($ctrl::valuesExist(["spd5", "spd4", "spd3", "spd2", "spd1"]))
@@ -15,23 +17,31 @@ $nowDate = Jalalian::forge('now', $timeZone);
 //if ($ctrl::valuesExist($_GET))
 //    echo "yes"; is bad
 //else echo "no";
-$keyArray = ["spd5", "spd4", "spd3", "spd2", "spd1"];
-$newArray = array();
-if($ctrl::valuesExist($keyArray))
-{
-//    echo "yes they all exist<br/>";
-    $normalArray = array_values($_GET);
-    $ctrl::addSpeeds_Items($normalArray, $nowDate, $timeZone);
 
-}
-
-//var_dump( $_GET);
+$timeZone = new DateTimeZone("Asia/Tehran");
 
 
+$nowDateTime = new DateTime("now", $timeZone);
+echo "NOW IS ".$nowDateTime->format("Y-m-d H:i:s")."<br/>";
+echo $nowDateTime->format("Y-m-d H:i:s")."<br/>";
+$nameArray = [
+    "spd4",
+    "spd3",
+    "spd2",
+    "spd1"];
+
+//    $ctrl::addSpeeds_Items($_GET, $nameArray, $nowDateTime);
+
+//echo $nowDateTime->modify("-5 minutes")->format("Y-m-d H:i:s");
+//for($i = 5; $i >= 1; $i--) {
+//    echo $ctrl::nMin_Ago_Gregorian($nowDateTime, $i)->format("Y-m-d H:i:s") . "<br/>";
+//    echo "$i<br/>";
+//    echo "Now Time is".$nowDateTime->format("Y-m-d H:i:s")."<br/><br/><br/><br/>";
+//}
 
 
-//$ctrl::add5thSpeed('spd',$_GET['spd'], $newDate);
-
+    $ctrl::addSpeeds_Items($_GET, $nameArray, $nowDateTime, $timeZone);
+//echo $ctrl::nMin_Ago_Gregorian($nowDateTime, 5)->format("Y-m-d H:i:s");
 
 
 

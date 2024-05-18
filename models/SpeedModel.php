@@ -8,13 +8,13 @@ class SpeedModel
 
 
     #region insert single record
-    public static function insertSpd($value, $dateTime)
+    public static function insertSpd($value, DateTime $dateTime)
     {
         self::$data = new DataAccess();
         try {
             self::$data::connect();
             $statement = self::$data::$pdo->prepare("INSERT INTO testdb1.speed(value, time) VALUES(:value, :time);");
-            $statement->execute([":value" => $value, ":time" => $dateTime]);
+            $statement->execute([":value" => $value, ":time" => $dateTime->format("Y-m-d H:i:s")]);
 
         } catch (PDOException $e) {
             echo "connection failed: " . $e->getMessage();
@@ -40,6 +40,9 @@ class SpeedModel
             echo "connection failed: " . $e->getMessage();
         }
     }
+
+    public static gregorianToJalali()
+
     #endregion
 
     #region export as excel
