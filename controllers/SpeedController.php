@@ -22,7 +22,6 @@ class SpeedController
         else
             $modified->modify("-$minAgo min");
         return $modified;
-
     }
 
     public static function addSpeed($value, $time)

@@ -22,8 +22,7 @@ $timeZone = new DateTimeZone("Asia/Tehran");
 
 
 $nowDateTime = new DateTime("now", $timeZone);
-echo "NOW IS ".$nowDateTime->format("Y-m-d H:i:s")."<br/>";
-echo $nowDateTime->format("Y-m-d H:i:s")."<br/>";
+
 $nameArray = [
     "spd4",
     "spd3",
@@ -40,9 +39,11 @@ $nameArray = [
 //}
 
 
-    $ctrl::addSpeeds_Items($_GET, $nameArray, $nowDateTime, $timeZone);
+//    $ctrl::addSpeeds_Items($_GET, $nameArray, $nowDateTime, $timeZone);
 //echo $ctrl::nMin_Ago_Gregorian($nowDateTime, 5)->format("Y-m-d H:i:s");
 
+$jalaliDate = jdate(strtotime("2024-05-18 11:43:32"));
+echo $jalaliDate."<br/>";
 
 
 

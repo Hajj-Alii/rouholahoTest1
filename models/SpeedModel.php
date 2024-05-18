@@ -1,5 +1,7 @@
 <?php
 include_once "DataAccess.php";
+include $_SERVER["DOCUMENT_ROOT"] . "/www/rouholahoTest1/" . "vendor/autoload.php";
+use Morilog\Jalali\Jalalian;
 class SpeedModel
 {
 
@@ -41,7 +43,10 @@ class SpeedModel
         }
     }
 
-    public static gregorianToJalali()
+    public static function gregorianToJalali(string $dateTime){
+        return jdate(strtotime($dateTime));
+
+    }
 
     #endregion
 
