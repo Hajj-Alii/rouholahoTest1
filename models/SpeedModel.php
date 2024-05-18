@@ -6,7 +6,6 @@ class SpeedModel
 {
 
     public static $data;
-    public static $speedArray;
 
 
     #region insert single record
@@ -25,23 +24,43 @@ class SpeedModel
     #endregion
 
     #region read all
-    public static function readAll()
+    public static function readAllAsGregorian()
     {
         self::$data = new DataAccess();
-        self::$speedArray = [];
+        $speedArray = [];
         try {
             self::$data::connect();
             $statement = self::$data::$pdo->query("SELECT * FROM testdb1.speed;");
 
             $records = $statement->fetchAll(PDO::FETCH_ASSOC);
             foreach ($records as $record)
-                self::$speedArray[$record["value"]] = $record["time"];
+                $speedArray[$record["value"]] = $record["time"];
 
-            return self::$speedArray;
+            return $speedArray;
         } catch (PDOException $e) {
             echo "connection failed: " . $e->getMessage();
         }
     }
+
+
+    public static function readAllAsJalali(){
+        self::$data = new DataAccess();
+        $speedArray = [];
+        try {
+            self::$data::connect();
+            $statement = self::$data::$pdo->query("SELECT * FROM testdb1.speed;");
+
+            $records = $statement->fetchAll(PDO::FETCH_ASSOC);
+            foreach ($records as $record)
+                $speedArray[$record["value"]] = self::gregorianToJalali($record["time"]);
+
+            return $speedArray;
+                }
+                catch (PDOException $e) {
+            echo "connection failed: " . $e->getMessage();
+                }
+
+}
 
     public static function gregorianToJalali(string $dateTime){
         return jdate(strtotime($dateTime));
@@ -53,12 +72,13 @@ class SpeedModel
     #region export as excel
     public static function exportAs_Excel()
     {
-        self::$data = new DataAccess();
         try {
-            $records = self::readAll();
+            $records = self::readAllAsJalali();
             $data = "Value\tTime\n";// excel coloumn header
             foreach ($records as $value => $time)
                 $data .= $value . "\t" . $time . "\n";
+            return $data;
+
         } catch (PDOException $e) {
             echo "connection failed: " . $e->getMessage();
         }

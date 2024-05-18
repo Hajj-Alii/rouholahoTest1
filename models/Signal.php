@@ -45,13 +45,12 @@ class Signal
 
     public function getAllAsExcel()
     {
-        self::$data = new DataAccess();
         try {
             $rows = self::readAll();
             $data = "Address\tName\n"; // Column headers
 //            var_dump($rows);
-            foreach ($rows as $address => $name)
-                $data .= $address . "\t" . $name . "\n";
+            foreach ($rows as $value => $time)
+                $data .= $value . "\t" . $time . "\n";
 
             return $data;
         } catch (PDOException $exception) {

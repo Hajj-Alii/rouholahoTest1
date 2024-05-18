@@ -1,7 +1,7 @@
 {
     "require": {
         "morilog/jalali": "3.*",
-        "sallar/jdatetime": "dev-master"
-
+        "sallar/jdatetime": "dev-master",
+      "ext-pdo": "*"
     }
 }

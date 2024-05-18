@@ -33,13 +33,13 @@ class SpeedController
             echo "parameter Undefined!";
     }
 
-//    public static function valueExist($paramName)
-//    {
-//        if (isset($_GET["$paramName"]) && !empty($_GET[$paramName]))
-//            return true;
-//        return false;
-//    }
-//
+    public static function valueExist($paramName)
+    {
+        if (isset($_GET["$paramName"]) && !empty($_GET[$paramName]))
+            return true;
+        return false;
+    }
+
     public static function valuesExist(array $paramNames)
     {
 
@@ -57,20 +57,15 @@ class SpeedController
         //assumption [spd5,spd4, spd3, spd2, spd1]
 
         if (self::valuesExist($nameArray)) {
-        self::$speed = new SpeedModel();
-        $i = 4;
-        foreach ($nameArray as $name) {
-            self::$speed::insertSpd($baseArray[$name], self::nMin_Ago_Gregorian($nowDateTime, $timeZone, $i));
-            $i--;
+            self::$speed = new SpeedModel();
+            $i = 4;
+            foreach ($nameArray as $name) {
+                self::$speed::insertSpd($baseArray[$name], self::nMin_Ago_Gregorian($nowDateTime, $timeZone, $i));
+                $i--;
+            }
+
+
         }
-
-//        for ($i = 4; $i >= 0; $i--)
-//            self::$speed::insertSpd((int)$valueArray[$i] +1, self::NMin_Ago($i, $dateTime, $timeZone));
-        }
-//        else
-//            echo "they dont exist, in speed controller";
-
-
     }
 
     public static function readAll()
@@ -84,6 +79,21 @@ class SpeedController
             $array[$value] = $time;
         var_dump($array);
     }
+
+    public static function exportAsExcel()
+    {
+        self::$speed = new SpeedModel();
+
+        echo self::$speed::exportAs_Excel();
+        header("Content-type: application/vnd.ms-excel");
+        header("Content-Disposition: attachment; filename=speedItems.xls");
+    }
+
+
+
+
+
+
 
 
 }
