@@ -89,11 +89,4 @@ class SpeedController
         header("Content-Disposition: attachment; filename=speedItems.xls");
     }
 
-
-
-
-
-
-
-
 }

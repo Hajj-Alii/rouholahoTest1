@@ -12,7 +12,7 @@
     <button type="submit" name="Export">Export</button>
 </form>
 <?php
-require_once $_SERVER["DOCUMENT_ROOT"].'/www/rouholahoTest1/controllers/SignalController.php';
+require_once $_SERVER["DOCUMENT_ROOT"].'/www/rouholahoTest1/controllers/SpeedController.php';
 $ctrl = new SpeedController();
 if(isset($_POST['Export'])) {
     $ctrl::exportAsExcel();
