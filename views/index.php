@@ -1,22 +1,25 @@
 <!doctype html>
-<html lang="en">
+<html lang="fa" dir="rtl">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1.0">
-<!--    <link rel="stylesheet" href="../assets/styles/indexStyle.css">-->
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-KyZXEAg3QhqLMpG8r+Knujsl5+z5vIOxSTP1NLy+giFjs/nyQr5c4M5k8Z6jY6h3" crossorigin="anonymous">
-
+        <link rel="stylesheet" href="../assets/styles/indexStyle.css">
+    <link rel="stylesheet" href="../assets/styles/indexStyle.css">
+    <link rel="stylesheet" href="../assets/bootstrap/css/bootstrap.css">
+    <script src="../assets/bootstrap/js/bootstrap.js"></script>
     <title>Document</title>
 </head>
 <body>
 
-<div class="container-fluid">
-    <div class="row">
-        <div class="col-lg-3 sidebar">
-            <ul class="nav flex-column">
-                <li class="nav-item"><a class="nav-link" href="#" onclick="showContent('speed')">Show Speed Items</a></li>
-                <li class="nav-item"><a class="nav-link" href="#" onclick="showContent('production')">Calculate Production Tonnage</a></li>
-                <li class="nav-item"><a class="nav-link" href="#" onclick="showContent('performance')">Personnel Performance</a></li>
+<div class="container-fluid vh-100">
+    <div class="row h-100">
+        <div class="col-lg-2 d-flex flex-column p-0 bg-dark text-light sidebar" >
+            <ul class="nav flex-column flex-lg-1" >
+                <li class="nav-item"><a class="nav-link custom-link" href="#" onclick="showContent('speedView')">نمایش سرعت</a>
+                </li>
+                <li class="nav-item"><a class="nav-link custom-link" href="#" onclick="showContent('login')">تناژ تولید</a></li>
+                <li class="nav-item"><a class="nav-link custom-link" href="#" onclick="showContent('performance')">عملکرد شیفت ها
+                        </a></li>
             </ul>
         </div>
         <div class="col-lg-9 content" id="content">
@@ -27,20 +30,14 @@
 <script>
 
     function showContent(feature) {
-        // Get the content div
         var contentDiv = document.getElementById('content');
-
-        // Use fetch or XMLHttpRequest to load content from the server
         fetch(feature + '.php')
             .then(response => response.text())
             .then(data => {
-                // Load the response into the content div
                 contentDiv.innerHTML = data;
             })
             .catch(error => console.error('Error loading content:', error));
     }
-
-
 </script>
 
 </body>

@@ -3,3 +3,8 @@ require_once $_SERVER["DOCUMENT_ROOT"].'/www/rouholahoTest1/controllers/SpeedCon
 $ctrl = new SpeedController();
 if(isset($_POST['Export']))
     $ctrl::exportAsExcel();
+
+
+
+
+

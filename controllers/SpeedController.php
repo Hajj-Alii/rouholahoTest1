@@ -14,10 +14,10 @@ class SpeedController
     }
 
 
-    public static function nMin_Ago_Gregorian(DateTime $nowDateTime, $timeZone,$minAgo): DateTime
+    public static function nMin_Ago_Gregorian(DateTime $nowDateTime, $timeZone, $minAgo): DateTime
     {
         $modified = DateTime::createFromFormat('Y-m-d H:i:s', $nowDateTime->format("Y-m-d H:i:s"), $timeZone);
-        if($minAgo == 1)
+        if ($minAgo == 1)
             $modified->modify("-0 min");
         else
             $modified->modify("-$minAgo min");
@@ -44,8 +44,7 @@ class SpeedController
     {
 
         foreach ($paramNames as $key)
-            if (!isset($_GET[$key]) && empty($_GET[$key]))
-            {
+            if (!isset($_GET[$key]) && empty($_GET[$key])) {
                 echo "parameter $key Undefined!";
                 return false;
             }
@@ -73,11 +72,11 @@ class SpeedController
 
         self::$speed = new SpeedModel();
 
-        $array = self::$speed::readAll();
+        $array = self::$speed::readAllAsJalali();
 
-        foreach ($array as $value => $time)
-            $array[$value] = $time;
-        var_dump($array);
+//        foreach ($array as $value => $time)
+//            $array[$value] = $time;
+        return $array;
     }
 
     public static function exportAsExcel()
