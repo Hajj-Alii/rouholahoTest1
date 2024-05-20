@@ -84,4 +84,44 @@ class SpeedModel
         }
     }
     #endregion
+
+    public static function getActiveTimes(DateTime $startDate, DateTime $endDate)
+    {
+        self::$data = new DataAccess();
+        $activeTime = [];
+
+        try{
+            self::$data::connect();
+            $statement = self::$data::$pdo->prepare("SELECT * FROM testdb1.speed WHERE value > 0 AND time BETWEEN :start_date AND :end_date;");
+            $statement->bindParam(':start_date', $startDate);
+            $statement->bindParam(':end_date', $endDate);
+            $statement->execute();
+            $records = $statement->fetchAll(PDO::FETCH_ASSOC);
+            return $activeTime;
+        }
+        catch (PDOException $e) {
+                echo "connection failed: " . $e->getMessage();
+        }
+    }
+
+
+    public static function getDeactiveTimes(DateTime $startDate, DateTime $endDate){
+        self::$data = new DataAccess();
+        $activeTime = [];
+
+        try{
+            self::$data::connect();
+            $statement = self::$data::$pdo->prepare("SELECT * FROM testdb1.speed WHERE (value = 0 OR value IS NULL) AND time BETWEEN :start_date AND :end_date;");
+            $statement->bindParam(':start_date', $startDate);
+            $statement->bindParam(':end_date', $endDate);
+            $statement->execute();
+            $records = $statement->fetchAll(PDO::FETCH_ASSOC);
+            return $activeTime;
+        }
+        catch (PDOException $e) {
+            echo "connection failed: " . $e->getMessage();
+        }
+
+    }
+
 }

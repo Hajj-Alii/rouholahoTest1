@@ -27,7 +27,8 @@ $nameArray = [
     "spd4",
     "spd3",
     "spd2",
-    "spd1"];
+    "spd1",
+    "spd0"];
 
 
 //    $ctrl::addSpeeds_Items($_GET, $nameArray, $nowDateTime);
@@ -42,9 +43,9 @@ $nameArray = [
 
 //    $ctrl::addSpeeds_Items($_GET, $nameArray, $nowDateTime, $timeZone);
 //echo $ctrl::nMin_Ago_Gregorian($nowDateTime, 5)->format("Y-m-d H:i:s");
-
-$jalaliDate = jdate(strtotime("2024-05-18 11:43:32"));
-echo $jalaliDate."<br/>";
+//
+//$jalaliDate = jdate(strtotime("2024-05-18 11:43:32"));
+//echo $jalaliDate."<br/>";
 
 
 

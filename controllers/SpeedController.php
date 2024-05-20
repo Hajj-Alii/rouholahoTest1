@@ -57,13 +57,11 @@ class SpeedController
 
         if (self::valuesExist($nameArray)) {
             self::$speed = new SpeedModel();
-            $i = 4;
+            $i = 5;
             foreach ($nameArray as $name) {
                 self::$speed::insertSpd($baseArray[$name], self::nMin_Ago_Gregorian($nowDateTime, $timeZone, $i));
                 $i--;
             }
-
-
         }
     }
 
@@ -78,6 +76,32 @@ class SpeedController
 //            $array[$value] = $time;
         return $array;
     }
+    public static function getActiveArray(DateTime $startDate, DateTime $endDate)
+    {
+        return SpeedModel::getActiveTimes($startDate, $endDate);
+    }
+    public static function getDeactiveArray(DateTime $startDate, DateTime $endDate)
+    {
+        return SpeedModel::getDeactiveTimes($startDate, $endDate);
+
+    }
+    public static function calculateActiveTime(DateTime $startDate, DateTime $endDate)
+    {
+        return count(SpeedModel::getActiveTimes($startDate, $endDate));
+    }
+
+    public static function calculateDeactiveTime(DateTime $startDate, DateTime $endDate){
+        return count(SpeedModel::getDeactiveTimes($startDate, $endDate));
+    }
+
+    public static function calculateActive_AVG(DateTime $startDate, DateTime $endDate)
+    {
+        $sum = 0;
+        foreach(self::getActiveArray($startDate, $endDate) as $value => $time)
+            $sum += $value;
+        return $sum / self::calculateActiveTime($startDate, $endDate);
+    }
+
 
     public static function exportAsExcel()
     {
