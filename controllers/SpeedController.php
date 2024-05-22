@@ -42,7 +42,6 @@ class SpeedController
 
     public static function valuesExist(array $paramNames)
     {
-
         foreach ($paramNames as $key)
             if (!isset($_GET[$key]) && empty($_GET[$key])) {
                 echo "parameter $key Undefined!";
@@ -72,9 +71,15 @@ class SpeedController
 
         $array = self::$speed::readAllAsJalali();
 
-//        foreach ($array as $value => $time)
-//            $array[$value] = $time;
+
         return $array;
+    }
+
+    public static function readAll_asJson(){
+        self::$speed = new SpeedModel();
+        $array = self::$speed::readAllAsJalali();
+        header('Content-Type: application/json');
+        echo json_encode($array);
     }
     public static function getActiveArray(DateTime $startDate, DateTime $endDate)
     {
@@ -102,14 +107,14 @@ class SpeedController
         return $sum / self::calculateActiveTime($startDate, $endDate);
     }
 
-
     public static function exportAsExcel()
     {
         self::$speed = new SpeedModel();
-
         echo self::$speed::exportAs_Excel();
         header("Content-type: application/vnd.ms-excel");
         header("Content-Disposition: attachment; filename=speedItems.xls");
     }
-
 }
+//if (basename(__FILE__) == basename($_SERVER['PHP_SELF'])) {
+//    header('Content-Type: application/json');
+//    echo SpeedController::readAll();}

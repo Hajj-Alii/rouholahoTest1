@@ -40,8 +40,9 @@ class SignalController
 
         foreach ($array as $address => $name)
             $array[$address] = $name;
+//        header('Content-Type: application/json');
 
-        var_dump($array);
+
     }
 
     public static function exportAsExcel()
