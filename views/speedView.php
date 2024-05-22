@@ -37,6 +37,14 @@ $records = $ctrl::readAll();
             </tbody>
         </table>
     </div>
+
+    <div class="row">
+        <div >
+
+        </div>
+
+    </div>
+
 </div>
 </body>
 <script>

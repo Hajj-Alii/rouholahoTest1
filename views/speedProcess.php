@@ -5,33 +5,15 @@ include $_SERVER["DOCUMENT_ROOT"] . "/www/rouholahoTest1/" . "vendor/autoload.ph
 use \Morilog\Jalali\Jalalian;
 
 $ctrl = new SpeedController();
-
-//
-//$nowDate = Jalalian::forge('now', $timeZone);
-
-//
-//
-// if ($ctrl::valuesExist(["spd5", "spd4", "spd3", "spd2", "spd1"]))
-//     echo "YES"; it was OK!
-
-//if ($ctrl::valuesExist($_GET))
-//    echo "yes"; is bad
-//else echo "no";
-
 $timeZone = new DateTimeZone("Asia/Tehran");
-
-
 $nowDateTime = new DateTime("now", $timeZone);
-
 $nameArray = [
+    "spd5",
     "spd4",
     "spd3",
     "spd2",
-    "spd1",
-    "spd0"];
-
-
-//    $ctrl::addSpeeds_Items($_GET, $nameArray, $nowDateTime);
+    "spd1"];
+    $ctrl::addSpeeds_Items($_GET, $nameArray, $nowDateTime, $timeZone);
 
 //echo $nowDateTime->modify("-5 minutes")->format("Y-m-d H:i:s");
 //for($i = 5; $i >= 1; $i--) {

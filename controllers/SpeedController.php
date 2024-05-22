@@ -17,10 +17,7 @@ class SpeedController
     public static function nMin_Ago_Gregorian(DateTime $nowDateTime, $timeZone, $minAgo): DateTime
     {
         $modified = DateTime::createFromFormat('Y-m-d H:i:s', $nowDateTime->format("Y-m-d H:i:s"), $timeZone);
-        if ($minAgo == 1)
-            $modified->modify("-0 min");
-        else
-            $modified->modify("-$minAgo min");
+        $modified->modify("-$minAgo min");
         return $modified;
     }
 
@@ -56,10 +53,14 @@ class SpeedController
 
         if (self::valuesExist($nameArray)) {
             self::$speed = new SpeedModel();
-            $i = 5;
+            $i = 4;
             foreach ($nameArray as $name) {
-                self::$speed::insertSpd($baseArray[$name], self::nMin_Ago_Gregorian($nowDateTime, $timeZone, $i));
-                $i--;
+//                if ($i == 1) self::$speed::insertSpd($baseArray[$name], self::nMin_Ago_Gregorian($nowDateTime, $timeZone, 0));
+//                else {
+                    self::$speed::insertSpd($baseArray[$name], self::nMin_Ago_Gregorian($nowDateTime, $timeZone, $i));
+                    echo $i;
+                    $i--;
+
             }
         }
     }
@@ -75,34 +76,39 @@ class SpeedController
         return $array;
     }
 
-    public static function readAll_asJson(){
+    public static function readAll_asJson()
+    {
         self::$speed = new SpeedModel();
         $array = self::$speed::readAllAsJalali();
         header('Content-Type: application/json');
         echo json_encode($array);
     }
+
     public static function getActiveArray(DateTime $startDate, DateTime $endDate)
     {
         return SpeedModel::getActiveTimes($startDate, $endDate);
     }
+
     public static function getDeactiveArray(DateTime $startDate, DateTime $endDate)
     {
         return SpeedModel::getDeactiveTimes($startDate, $endDate);
 
     }
+
     public static function calculateActiveTime(DateTime $startDate, DateTime $endDate)
     {
         return count(SpeedModel::getActiveTimes($startDate, $endDate));
     }
 
-    public static function calculateDeactiveTime(DateTime $startDate, DateTime $endDate){
+    public static function calculateDeactiveTime(DateTime $startDate, DateTime $endDate)
+    {
         return count(SpeedModel::getDeactiveTimes($startDate, $endDate));
     }
 
     public static function calculateActive_AVG(DateTime $startDate, DateTime $endDate)
     {
         $sum = 0;
-        foreach(self::getActiveArray($startDate, $endDate) as $value => $time)
+        foreach (self::getActiveArray($startDate, $endDate) as $value => $time)
             $sum += $value;
         return $sum / self::calculateActiveTime($startDate, $endDate);
     }
