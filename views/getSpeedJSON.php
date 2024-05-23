@@ -3,7 +3,7 @@ require $_SERVER["DOCUMENT_ROOT"] . "/www/rouholahoTest1/controllers/SpeedContro
 
 $ctrl = new SpeedController();
 $records = $ctrl::readAll();
-$formattedRecords = array_map(function($value, $time) {
+$formattedRecords = array_map(function ($value, $time) {
     return [
         'speed' => $value,
         'time' => $time->format('Y-m-d h:i:s')

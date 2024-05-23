@@ -8,12 +8,12 @@
 <body>
 <div class="login-container">
     <h2>Login</h2>
-    <form class="login-form" action="../controllers/auth.php" method="post">
+    <form class="login-form" action="loginProcess.php" method="post">
         <label>
             <input type="text" name="username" placeholder="Username" required>
         </label>
         <label>
-            <input type="password" name="password" placeholder="Password" required>
+            <input type="password" name="password" required>
         </label>
         <input type="submit" value="login">
     </form>

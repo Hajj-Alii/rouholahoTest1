@@ -9,7 +9,7 @@
     <script src="../node_modules/persian-datepicker/dist/js/persian-datepicker.js"></script>
     <script src="../node_modules/persian-date/dist/persian-date.js"></script>
     <script src="../node_modules/jquery/dist/jquery.js"></script>
-  <title>Document</title>
+    <title>Document</title>
 </head>
 
 <body>
@@ -23,17 +23,10 @@
     <input type="submit" value="Submit">
 </form>
 
-
-
-
-
-
-
-
 <script>
 
 
-    $(document).ready(function() {
+    $(document).ready(function () {
         // Initialize Persian Datepicker
         $('#start').persianDatepicker({
             format: 'YYYY/MM/DD'
@@ -43,7 +36,7 @@
         });
 
         // Form submission validation
-        $('#jalaliDateRangeForm').on('submit', function(event) {
+        $('#jalaliDateRangeForm').on('submit', function (event) {
             var startDate = $('#start').val();
             var endDate = $('#end').val();
 
@@ -56,8 +49,6 @@
 
 </script>
 </body>
-
-
 
 
 </html>

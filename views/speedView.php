@@ -1,4 +1,3 @@
-
 <?php
 
 require $_SERVER["DOCUMENT_ROOT"] . "/www/rouholahoTest1/controllers/SpeedController.php";
@@ -7,7 +6,6 @@ $ctrl = new SpeedController();
 $records = $ctrl::readAll();
 ?>
 <body>
-
 
 
 <div class="container   ">
@@ -39,7 +37,7 @@ $records = $ctrl::readAll();
     </div>
 
     <div class="row">
-        <div >
+        <div>
 
         </div>
 
