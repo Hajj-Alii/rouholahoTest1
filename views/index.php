@@ -7,6 +7,7 @@
     <link rel="stylesheet" href="../assets/bootstrap/css/bootstrap.css">
     <script src="../assets/bootstrap/js/bootstrap.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
     <title>Document</title>
 </head>
 <?php

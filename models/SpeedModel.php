@@ -2,6 +2,7 @@
 include_once "DataAccess.php";
 include $_SERVER["DOCUMENT_ROOT"] . "/www/rouholahoTest1/" . "vendor/autoload.php";
 use Morilog\Jalali\Jalalian;
+use Carbon\Carbon;
 class SpeedModel
 {
 
@@ -104,7 +105,17 @@ class SpeedModel
         }
     }
 
+    public static function convertPersianToEnglish($number) {
+        $persianDigits = ['۰', '۱', '۲', '۳', '۴', '۵', '۶', '۷', '۸', '۹'];
+        $englishDigits = ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9'];
+        return str_replace($persianDigits, $englishDigits, $number);
+    }
 
+    public static function jalalianToGregorian($jalalianDateTime)
+    {
+        $formmatedDate = str_replace("/", "-", self::convertPersianToEnglish($jalalianDateTime));
+        return Carbon::createFromTimestamp( Jalalian::fromFormat('Y-m-d H:i:s', $formmatedDate)->getTimestamp())->format('Y-m-d H:i:s');
+    }
     public static function getDeactiveTimes(DateTime $startDate, DateTime $endDate){
         self::$data = new DataAccess();
         $activeTime = [];
