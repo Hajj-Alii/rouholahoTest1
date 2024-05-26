@@ -40,7 +40,7 @@ class SignalController
 
         foreach ($array as $address => $name)
             $array[$address] = $name;
-//        header('Content-Type: application/json');
+        header('Content-Type: application/json');
 
 
     }

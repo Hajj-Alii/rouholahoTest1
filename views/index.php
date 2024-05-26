@@ -5,6 +5,10 @@
     <meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1.0">
     <link rel="stylesheet" href="../assets/styles/indexStyle.css">
     <link rel="stylesheet" href="../assets/bootstrap/css/bootstrap.css">
+    <link rel="stylesheet" href="../node_modules/persian-datepicker/dist/css/persian-datepicker.css">
+    <script src="../node_modules/jquery/dist/jquery.js"></script>
+    <script src="../node_modules/persian-datepicker/dist/js/persian-datepicker.js"></script>
+    <script src="../node_modules/persian-date/dist/persian-date.js"></script>
     <script src="../assets/bootstrap/js/bootstrap.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 

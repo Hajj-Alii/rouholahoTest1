@@ -2,11 +2,18 @@
 include_once $_SERVER["DOCUMENT_ROOT"] . "/www/rouholahoTest1/models/SpeedModel.php";
 
 use \Morilog\Jalali\Jalalian;
+use Carbon\Carbon;
 
 class SpeedController
 {
 
     public static $speed;
+
+    public static function isStartOlder(DateTime $startDate, DateTime $endDate)
+    {
+        return $startDate <= $endDate;
+    }
+
 
     public static function NMin_Ago_Jalali($minAgo, Jalalian $jalalianDateTime, DateTimeZone $timeZone)
     {
@@ -46,7 +53,7 @@ class SpeedController
             }
         return true;
     }
-
+    #region add speed items
     public static function addSpeeds_Items(array $baseArray, array $nameArray, DateTime $nowDateTime, DateTimeZone $timeZone)
     {
         //assumption [spd5,spd4, spd3, spd2, spd1]
@@ -55,22 +62,23 @@ class SpeedController
             self::$speed = new SpeedModel();
             $i = 4;
             foreach ($nameArray as $name) {
-//                if ($i == 1) self::$speed::insertSpd($baseArray[$name], self::nMin_Ago_Gregorian($nowDateTime, $timeZone, 0));
-//                else {
-                    self::$speed::insertSpd($baseArray[$name], self::nMin_Ago_Gregorian($nowDateTime, $timeZone, $i));
-                    echo $i;
-                    $i--;
 
+                self::$speed::insertSpd($baseArray[$name], self::nMin_Ago_Gregorian($nowDateTime, $timeZone, $i));
+                echo $i;
+                $i--;
             }
         }
     }
 
+    #endregion
+
     public static function readAll()
     {
-
+        $array = [];
         self::$speed = new SpeedModel();
-
-        $array = self::$speed::readAllAsJalali();
+        $records = self::$speed::readAllAsJalali();
+        foreach ($records as $value => $time)
+            $array[$value] = $time;
 
 
         return $array;
@@ -84,35 +92,39 @@ class SpeedController
         echo json_encode($array);
     }
 
-    public static function getActiveArray(DateTime $startDate, DateTime $endDate)
+
+
+    public static function convertPersianToEnglish($number)
     {
-        return SpeedModel::getActiveTimes($startDate, $endDate);
+        $persianDigits = ['۰', '۱', '۲', '۳', '۴', '۵', '۶', '۷', '۸', '۹'];
+        $englishDigits = ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9'];
+        return str_replace($persianDigits, $englishDigits, $number);
+    }
+    public static function jalaliToGregorian_DateTime($jalaliDateTime){
+        $formmatedDate = str_replace("/", "-", self::convertPersianToEnglish($jalaliDateTime));
+        return Carbon::createFromTimestamp(Jalalian::fromFormat("Y-m-d H:i:s", $formmatedDate)->getTimestamp());
     }
 
-    public static function getDeactiveArray(DateTime $startDate, DateTime $endDate)
+//    public static function countActiveRecords(DateTime $startDate, DateTime $endDate)
+//    {
+//        if (self::isStartOlder($startDate, $endDate))
+//            return count(SpeedModel::getActiveRecords($startDate, $endDate));
+//        else
+//            echo "{$endDate->format("Y-m-d H:i:s")} is older than {$startDate->format("Y-m-d H:i:s")}";
+//
+//    }
+//
+    public static function fetchRecords($startDate, $endDate)
     {
-        return SpeedModel::getDeactiveTimes($startDate, $endDate);
+                if (self::isStartOlder($startDate, $endDate))
+                    return SpeedModel::getRecords(self::jalaliToGregorian_DateTime($startDate), self::jalaliToGregorian_DateTime($endDate));
+                else
+                    echo "{$endDate->format("Y-m-d H:i:s")} is older than {$startDate->format("Y-m-d H:i:s")}";
 
     }
 
-    public static function calculateActiveTime(DateTime $startDate, DateTime $endDate)
-    {
-        return count(SpeedModel::getActiveTimes($startDate, $endDate));
-    }
 
-    public static function calculateDeactiveTime(DateTime $startDate, DateTime $endDate)
-    {
-        return count(SpeedModel::getDeactiveTimes($startDate, $endDate));
-    }
-
-    public static function calculateActive_AVG(DateTime $startDate, DateTime $endDate)
-    {
-        $sum = 0;
-        foreach (self::getActiveArray($startDate, $endDate) as $value => $time)
-            $sum += $value;
-        return $sum / self::calculateActiveTime($startDate, $endDate);
-    }
-
+    #region export as Excel
     public static function exportAsExcel()
     {
         self::$speed = new SpeedModel();
@@ -120,7 +132,5 @@ class SpeedController
         header("Content-type: application/vnd.ms-excel");
         header("Content-Disposition: attachment; filename=speedItems.xls");
     }
+    #endregion
 }
-//if (basename(__FILE__) == basename($_SERVER['PHP_SELF'])) {
-//    header('Content-Type: application/json');
-//    echo SpeedController::readAll();}

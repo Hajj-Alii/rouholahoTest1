@@ -6,7 +6,7 @@ $records = $ctrl::readAll();
 $formattedRecords = array_map(function ($value, $time) {
     return [
         'speed' => $value,
-        'time' => $time->format('Y-m-d h:i:s')
+        'time' => $time
     ];
 }, array_keys($records), $records);
 

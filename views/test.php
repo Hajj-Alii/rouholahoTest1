@@ -14,10 +14,14 @@
 <body>
 <form method="get" action="testProcess.php">
     <label>
-        <input type="text" name="startDateTime" class="example1" />
+        <input type="text" name="startDate" class="example1" />
         <br/>
     </label>
-    <button type="submit" name="submit">send</button>
+    <label>
+        <input type="text" name="endDate" class="example1" />
+        <br/>
+    </label>
+    <button type="submit" name="submit" value="handled">send</button>
 
 </form>
 

@@ -4,8 +4,8 @@ require $_SERVER["DOCUMENT_ROOT"] . "/www/rouholahoTest1/controllers/SpeedContro
 
 $ctrl = new SpeedController();
 $records = $ctrl::readAll();
+var_dump($records);
 ?>
-<body>
 
 
 <div class="container   ">
@@ -26,10 +26,10 @@ $records = $ctrl::readAll();
             </tr>
             </thead>
             <tbody>
-            <?php foreach ($records as $value => $time): ?>
+            <?php foreach ($records as $record): ?>
                 <tr>
-                    <td><?php echo htmlspecialchars($value); ?></td>
-                    <td><?php echo htmlspecialchars($time); ?></td>
+                    <td><?php echo htmlspecialchars($record['value']); ?></td>
+                    <td><?php echo htmlspecialchars($record['time']); ?></td>
                 </tr>
             <?php endforeach; ?>
             </tbody>
@@ -44,9 +44,16 @@ $records = $ctrl::readAll();
     </div>
 
 </div>
-</body>
-<script>
-    // console.log(encodedRecords)
-
+<script type="text/javascript">
+    $(document).ready(function() {
+        $(".example1").pDatepicker({
+            format: 'YYYY/MM/DD HH:mm:ss',
+            timePicker: {
+                enabled: true,
+                meridiem: {
+                    enabled: false
+                }
+            }
+        });
+    });
 </script>
-</html>
