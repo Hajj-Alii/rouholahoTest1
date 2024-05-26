@@ -65,14 +65,12 @@ echo "Welcome, " . htmlspecialchars($_SESSION['username']) . "!";
             .then(data => {
                 const values = data.map(record => record.speed);
                 const times = data.map(record => record.time);
-
                 const ctx = document.getElementById('myChart').getContext('2d');
                 new Chart(ctx, {
                     type: 'line',
                     data: {
                         labels: times,
                         datasets: [{
-                            label: 'Values over Time',
                             data: values,
                             backgroundColor: 'rgba(75, 192, 192, 0.2)',
                             borderColor: 'rgba(75, 192, 192, 1)',
@@ -93,6 +91,5 @@ echo "Welcome, " . htmlspecialchars($_SESSION['username']) . "!";
             .catch(error => console.error('Error fetching data:', error));
     }
 </script>
-
 </body>
 </html>

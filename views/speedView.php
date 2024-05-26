@@ -4,7 +4,6 @@ require $_SERVER["DOCUMENT_ROOT"] . "/www/rouholahoTest1/controllers/SpeedContro
 
 $ctrl = new SpeedController();
 $records = $ctrl::readAll();
-var_dump($records);
 ?>
 
 
