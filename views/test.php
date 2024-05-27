@@ -12,7 +12,7 @@
     <title>Document</title>
 </head>
 <body>
-<form method="get" action="testProcess.php">
+<form method="get" action="testTiming.php">
     <label>
         <input type="text" name="startDate" class="example1" />
         <br/>

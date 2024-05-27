@@ -46,49 +46,106 @@ echo "Welcome, " . htmlspecialchars($_SESSION['username']) . "!";
 </div>
 
 <script>
-    function showContent(page) {
+        function showContent(page) {
         fetch(page + '.php')
             .then(response => response.text())
             .then(html => {
                 document.getElementById('content').innerHTML = html;
                 if (page === 'speedView') {
-                    // If the loaded page is speedView.php, initialize the chart
-                    initializeChart();
+                    // If the loaded page is speedView.php, initialize the chart and table
+                    initializeDatePickers();
+                    initializeForm();
+                    fetchAndDisplayData(); // Fetch default data
                 }
             })
             .catch(error => console.error('Error loading content:', error));
     }
 
-    function initializeChart() {
-        fetch('getSpeedJSON.php')
-            .then(response => response.json())
-            .then(data => {
-                const values = data.map(record => record.speed);
-                const times = data.map(record => record.time);
-                const ctx = document.getElementById('myChart').getContext('2d');
-                new Chart(ctx, {
-                    type: 'line',
-                    data: {
-                        labels: times,
-                        datasets: [{
-                            label: 'Speed over Time',
-                            data: values,
-                            backgroundColor: 'rgba(75, 192, 192, 0.2)',
-                            borderColor: 'rgba(75, 192, 192, 1)',
-                            borderWidth: 1
-                        }]
-                    },
-                    options: {
-                        scales: {
-                            y: {
-                                beginAtZero: true
-                            }
+        function initializeDatePickers() {
+        $("#startDate, #endDate").pDatepicker({
+            format: 'YYYY/MM/DD HH:mm:ss',
+            timePicker: {
+                enabled: true,
+                meridiem: {
+                    enabled: false
+                }
+            }
+        });
+    }
+
+        function initializeForm() {
+        document.getElementById('dateRangeForm').addEventListener('submit', function(event) {
+            event.preventDefault();
+            fetchAndDisplayData();
+        });
+    }
+
+        function fetchAndDisplayData() {
+        const startDate = document.getElementById('startDate').value;
+        const endDate = document.getElementById('endDate').value;
+
+        fetch(`fetchSpeedRecords.php?startDate=${startDate}&endDate=${endDate}`)
+        .then(response => response.json())
+        .then(data => {
+        updateChart(data);
+        updateTable(data);
+    })
+        .catch(error => console.error('Error fetching data:', error));
+    }
+
+        function updateChart(data) {
+            const ctx = document.getElementById('myChart').getContext('2d');
+
+            // Check if a chart instance already exists
+            if (window.myChart instanceof Chart) {
+                window.myChart.destroy(); // Destroy the existing chart
+            }
+
+            const values = data.map(record => record.value);
+            const times = data.map(record => record.time);
+
+            // Create new Chart instance
+            window.myChart = new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: times,
+                    datasets: [{
+                        label: 'Speed over Time',
+                        data: values,
+                        backgroundColor: 'rgba(75, 192, 192, 0.2)',
+                        borderColor: 'rgba(75, 192, 192, 1)',
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    scales: {
+                        y: {
+                            beginAtZero: true
                         }
                     }
-                });
-            })
-            .catch(error => console.error('Error fetching data:', error));
+                }
+            });
+        }
+
+
+        function updateTable(data) {
+        const tableBody = document.getElementById('speedTable').getElementsByTagName('tbody')[0];
+        tableBody.innerHTML = ''; // Clear existing rows
+
+        data.forEach(record => {
+        const row = tableBody.insertRow();
+        const cell1 = row.insertCell(0);
+        const cell2 = row.insertCell(1);
+        cell1.textContent = record.value !== null ? record.value : 'Silent';
+        cell2.textContent = record.time;
+    });
     }
+
+        // Initialize the content on page load
+        document.addEventListener('DOMContentLoaded', () => {
+        showContent('speedView');
+    });
 </script>
+
 </body>
 </html>

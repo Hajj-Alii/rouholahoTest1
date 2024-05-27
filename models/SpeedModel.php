@@ -114,6 +114,10 @@ class SpeedModel
         return jdate(strtotime($dateTime));
 
     }
+    public static function gregorianToJalali_str(string $dateTime)
+    {
+        return jdate(strtotime($dateTime))->format("Y-m-d H:i:s");
+    }
 
     #endregion
 
@@ -152,8 +156,8 @@ class SpeedModel
 
             $records = $statement->fetchAll(PDO::FETCH_ASSOC);
 
-            echo "Query executed. Records fetched: " . count($records) . "\n";
-            print_r($records); // Debug print
+//            echo "Query executed. Records fetched: " . count($records) . "\n";
+//            print_r($records); // Debug print
 
             return $records; // Return the fetched records
         } catch (PDOException $e) {
@@ -195,7 +199,7 @@ class SpeedModel
                 $currentSilentTime = clone $startDate;
                 while ($currentSilentTime <= $endDate) {
                     $resultRecords[] = [
-                        'time' => self::gregorianToJalali($currentSilentTime->format('Y-m-d H:i:s')),
+                        'time' => self::gregorianToJalali_str($currentSilentTime->format('Y-m-d H:i:s')),
                         'value' => null, // "silent times" value
                         'status' => 'silent',
                     ];
@@ -208,7 +212,7 @@ class SpeedModel
                     // Fill gaps before the first record
                     while ($lastRecordTime < $currentRecordTime) {
                         $resultRecords[] = [
-                            'time' => self::gregorianToJalali($lastRecordTime->format('Y-m-d H:i:s')),
+                            'time' => self::gregorianToJalali_str($lastRecordTime->format('Y-m-d H:i:s')),
                             'value' => null, // "silent times" value
                             'status' => 'silent',
                         ];
@@ -217,7 +221,7 @@ class SpeedModel
 
                     // Add the current active record
                     $resultRecords[] = [
-                        'time' => self::gregorianToJalali($record['time']),
+                        'time' => self::gregorianToJalali_str($record['time']),
                         'value' => $record['value'],
                         'status' => 'active',
                     ];
@@ -230,7 +234,7 @@ class SpeedModel
                 // Fill gaps after the last record up to endDate
                 while ($lastRecordTime <= $endDate) {
                     $resultRecords[] = [
-                        'time' => self::gregorianToJalali($lastRecordTime->format('Y-m-d H:i:s')),
+                        'time' => self::gregorianToJalali_str($lastRecordTime->format('Y-m-d H:i:s')),
                         'value' => null, // "silent times" value
                         'status' => 'silent',
                     ];

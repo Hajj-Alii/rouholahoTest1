@@ -5,28 +5,10 @@ use \Morilog\Jalali\Jalalian;
 use Carbon\Carbon;
 
 
-//if($_SERVER['REQUEST_METHOD'] == 'GET') {
-//    if (SpeedController::valuesExist(["startDate", "endDate"])){
-//        var_dump(SpeedController::getDeactiveArray(
-//            SpeedController::jalaliToGregorian_DateTime($_GET["startDate"]),
-//            SpeedController::jalaliToGregorian_DateTime($_GET["endDate"])));}
-//    else
-//        echo "value doesnt exist";
-//
-//    if(SpeedController::valuesExist(["startDate", "endDate"])){
-//        var_dump(SpeedController::getActiveArray(
-//            SpeedController::jalaliToGregorian_DateTime($_GET["startDate"]),
-//            SpeedController::jalaliToGregorian_DateTime($_GET["endDate"]))
-//        );
-//    }
-//}
-var_dump(SpeedController::readAll());
+if(isset($_GET["startDate"]) && isset($_GET["endDate"])){
+    $startDate = $_GET["startDate"];
+    $endDate = $_GET["endDate"];
+    var_dump($startDate, $endDate);
+    var_dump(SpeedController::fetchRecords_jalaliToGregorian($startDate, $endDate));
 
-
-
-
-//var_dump(
-//    SpeedModel::getActiveRecords(
-//        new DateTime("2024-05-24 08:34:4", new DateTimeZone("Asia/Tehran")),
-//        new DateTime("now", new DateTimeZone("Asia/Tehran")))
-//);
+}
