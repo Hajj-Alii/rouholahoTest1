@@ -53,6 +53,7 @@ class SpeedController
             }
         return true;
     }
+
     #region add speed items
     public static function addSpeeds_Items(array $baseArray, array $nameArray, DateTime $nowDateTime, DateTimeZone $timeZone)
     {
@@ -93,14 +94,15 @@ class SpeedController
     }
 
 
-
     public static function convertPersianToEnglish($number)
     {
         $persianDigits = ['۰', '۱', '۲', '۳', '۴', '۵', '۶', '۷', '۸', '۹'];
         $englishDigits = ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9'];
         return str_replace($persianDigits, $englishDigits, $number);
     }
-    public static function jalaliToGregorian_DateTime($jalaliDateTime){
+
+    public static function jalaliToGregorian_DateTime($jalaliDateTime)
+    {
         $formmatedDate = str_replace("/", "-", self::convertPersianToEnglish($jalaliDateTime));
         return Carbon::createFromTimestamp(Jalalian::fromFormat("Y-m-d H:i:s", $formmatedDate)->getTimestamp());
     }
@@ -114,13 +116,29 @@ class SpeedController
 //
 //    }
 //
-    public static function fetchRecords($startDate, $endDate)
+    public static function fetchRecords_jalaliToGregorian($startDate, $endDate)
     {
-                if (self::isStartOlder($startDate, $endDate))
-                    return SpeedModel::getRecords(self::jalaliToGregorian_DateTime($startDate), self::jalaliToGregorian_DateTime($endDate));
-                else
-                    echo "{$endDate->format("Y-m-d H:i:s")} is older than {$startDate->format("Y-m-d H:i:s")}";
+        if (self::isStartOlder($startDate, $endDate))
+            return SpeedModel::getRecords(self::jalaliToGregorian_DateTime($startDate), self::jalaliToGregorian_DateTime($endDate));
+        else
+            echo "{$endDate->format("Y-m-d H:i:s")} is older than {$startDate->format("Y-m-d H:i:s")}";
 
+    }
+    public static  function fetchRecords_gregorian($startDate, $endDate)
+    {
+        if(self::isStartOlder($startDate, $endDate))
+            return SpeedModel::getRecords($startDate, $endDate);
+        else
+            echo "{$startDate->format("Y-m-d H:i:s")} is older than {$endDate->format("Y-m-d H:i:s")}";
+    }
+    public static function fetchAllRecords2()
+    {
+        return self::fetchRecords_gregorian(SpeedModel::fetchFirstRecord_Time(), new DateTime("now", new DateTimeZone("Asia/Tehran")));
+    }
+
+    public static function fetchAllRecords()
+    {
+        return self::fetchRecords_jalaliToGregorian(SpeedModel::fetchFirstRecord_Time(), self::jalaliToGregorian_DateTime(Jalalian::now(new DateTimeZone("Asia/Tehran"))));
     }
 
 

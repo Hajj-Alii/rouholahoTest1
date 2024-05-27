@@ -46,6 +46,43 @@ class SpeedModel
     }
     #endregion
 
+
+
+    public static function fetchFirstRecord_Time()
+    {
+        self::$data = new DataAccess();
+        try {
+            self::$data::connect();
+            $statement = self::$data::$pdo->prepare("SELECT time from testdb1.speed ORDER BY time ASC LIMIT 1;");
+            $statement->execute();
+            $firstDateTime = new DateTime($statement->fetch(PDO::FETCH_ASSOC)['time'], new DateTimeZone("Asia/Tehran"));
+            return $firstDateTime;
+
+        }
+        catch (PDOException $e)
+        {
+            echo "connection failed: " . $e->getMessage();
+        }
+
+    }
+
+    public static function fetchLastRecord_Time()
+    {
+        self::$data = new DataAccess();
+        try {
+            self::$data::connect();
+            $statement = self::$data::$pdo->prepare("SELECT time from testdb1.speed ORDER BY time DESC LIMIT 1;");
+            $statement->execute();
+            $firstRecord = $statement->fetch(PDO::FETCH_ASSOC);
+            return $firstRecord;
+        }
+        catch (PDOException $e){
+            echo "connection error: " . $e->getMessage();
+        }
+    }
+
+
+
     #region readAllAsJalali
     public static function readAllAsJalali()
     {

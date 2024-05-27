@@ -71,6 +71,7 @@ echo "Welcome, " . htmlspecialchars($_SESSION['username']) . "!";
                     data: {
                         labels: times,
                         datasets: [{
+                            label: 'Speed over Time',
                             data: values,
                             backgroundColor: 'rgba(75, 192, 192, 0.2)',
                             borderColor: 'rgba(75, 192, 192, 1)',
@@ -79,11 +80,9 @@ echo "Welcome, " . htmlspecialchars($_SESSION['username']) . "!";
                     },
                     options: {
                         scales: {
-                            yAxes: [{
-                                ticks: {
-                                    beginAtZero: true
-                                }
-                            }]
+                            y: {
+                                beginAtZero: true
+                            }
                         }
                     }
                 });
