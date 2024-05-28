@@ -1,7 +1,10 @@
 <?php
-
+include_once "DataAccess.php";
+include_once "SpeedModel.php";
+include $_SERVER["DOCUMENT_ROOT"] . "/www/rouholahoTest1/" . "vendor/autoload.php";
 class ParamsModel
 {
+
 
     public static function recordExists($startTime, $endTime)
     {
@@ -24,7 +27,7 @@ class ParamsModel
     }
 
 
-    public static function generateParams(DateTime $startTime, DateTime $endTime, $width, $grammage)
+    public static function fetchSpeeds(DateTime $startTime, DateTime $endTime, $width, $grammage)
     {
         DataAccess::connect();
         try {
@@ -45,7 +48,6 @@ class ParamsModel
                         ];
                     }
                     return $paramArray;
-
                 }
             }
         } catch (PDOException $e) {
@@ -57,7 +59,7 @@ class ParamsModel
     {
         DataAccess::connect();
         try {
-            $paramArray = self::generateParams($startTime, $endTime, $width, $grammage);
+            $paramArray = self::fetchSpeeds($startTime, $endTime, $width, $grammage);
             $stmt = DataAccess::$pdo->prepare("
             INSERT INTO testdb1.parameters (time,value, width, grammage)
             VALUES (:time, :value, :width, :grammage)
