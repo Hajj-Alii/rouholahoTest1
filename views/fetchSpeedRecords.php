@@ -24,6 +24,7 @@ foreach ($records as $record) {
     $formattedRecords[] = $formattedRecord;
 }
 
+
 // Encode the formatted records as JSON
 $encodedRecords = json_encode($formattedRecords);
 
