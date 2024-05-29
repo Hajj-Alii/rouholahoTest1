@@ -1,12 +1,29 @@
 <?php
 require $_SERVER["DOCUMENT_ROOT"] . "/www/rouholahoTest1/models/ParamsModel.php";
+require $_SERVER["DOCUMENT_ROOT"] . "/www/rouholahoTest1/controllers/ParamsController.php";
 
-$data = json_decode(file_get_contents('php://input'), true);
+// Log the received JSON data
+$requestPayload = file_get_contents('php://input');
+file_put_contents('request_log.txt', $requestPayload . PHP_EOL, FILE_APPEND);
 
-$startDate = $data['startDate'];
-$endDate = $data['endDate'];
-$width = (int)$data['width'];
-$grammage = (int)$data['grammage'];
+header('Content-Type: application/json');
 
-ParamsController::insertParams($startDate, $endDate, $width, $grammage);
+try {
+    $data = json_decode($requestPayload, true);
+
+    if (!$data) {
+        throw new Exception('Invalid input data.');
+    }
+
+    $startDate = $data['startDate'];
+    $endDate = $data['endDate'];
+    $width = (int)$data['width'];
+    $grammage = (int)$data['grammage'];
+
+    ParamsController::insertParams($startDate, $endDate, $width, $grammage);
+
+    echo json_encode(['message' => 'Data inserted successfully']);
+} catch (Exception $e) {
+    echo json_encode(['error' => $e->getMessage()]);
+}
 ?>

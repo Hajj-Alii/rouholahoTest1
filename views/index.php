@@ -84,7 +84,7 @@ echo "Welcome, " . htmlspecialchars($_SESSION['username']) . "!";
         fetch(`fetchSpeedRecords.php?startDate=${startDate}&endDate=${endDate}`)
             .then(response => response.json())
             .then(data => {
-                console.log(data); // Debugging: Check the fetched data
+                // console.log(data); // Debugging: Check the fetched data
                 updateSpeedChart(data);
                 updateSpeedTable(data);
             })
@@ -181,6 +181,8 @@ echo "Welcome, " . htmlspecialchars($_SESSION['username']) . "!";
         fetch(`fetchParamRecords.php?startDate=${startDate}&endDate=${endDate}`)
             .then(response => response.json())
             .then(data => {
+
+                console.log(data);
                 updateTonnageTable(data);
                 showTonnageInputForm(data.length === 0);
             })
@@ -192,13 +194,14 @@ echo "Welcome, " . htmlspecialchars($_SESSION['username']) . "!";
         tableBody.innerHTML = '';
 
         data.forEach(record => {
+            // console.log(record);
             const row = tableBody.insertRow();
             const cell1 = row.insertCell(0);
             const cell2 = row.insertCell(1);
             const cell3 = row.insertCell(2);
             const cell4 = row.insertCell(3);
             cell1.textContent = record.time;
-            cell2.textContent = record.value;
+            cell2.textContent = record.speed;
             cell3.textContent = record.width;
             cell4.textContent = record.grammage;
         });
@@ -214,6 +217,8 @@ echo "Welcome, " . htmlspecialchars($_SESSION['username']) . "!";
         const width = document.getElementById('width').value;
         const grammage = document.getElementById('grammage').value;
 
+        // console.log({ startDate, endDate, width, grammage }); // Log the data being sent
+
         fetch('insertTonnageParams.php', {
             method: 'POST',
             headers: {
@@ -223,6 +228,7 @@ echo "Welcome, " . htmlspecialchars($_SESSION['username']) . "!";
         })
             .then(response => response.json())
             .then(data => {
+                console.log(data); // Log the response from the server
                 if (data.error) {
                     alert('Error: ' + data.error);
                 } else {
@@ -232,6 +238,7 @@ echo "Welcome, " . htmlspecialchars($_SESSION['username']) . "!";
             })
             .catch(error => console.error('Error inserting data:', error));
     }
+
 
 </script>
 </body>

@@ -148,12 +148,9 @@ class SpeedModel
             $statement = self::$data::$pdo->prepare("SELECT * FROM testdb1.speed WHERE time BETWEEN :start_date AND :end_date;");
             $startDateFormatted = $startDate->format("Y-m-d H:i:s");
             $endDateFormatted = $endDate->format("Y-m-d H:i:s");
-
-
             $statement->bindParam(':start_date', $startDateFormatted);
             $statement->bindParam(':end_date', $endDateFormatted);
             $statement->execute();
-
             $records = $statement->fetchAll(PDO::FETCH_ASSOC);
 
 //            echo "Query executed. Records fetched: " . count($records) . "\n";
