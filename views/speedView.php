@@ -19,7 +19,7 @@ $records = $ctrl::readAll();
                         <input type="text" id="endDate" name="endDate" data-jdp class="form-control">
                     </div>
                     <button type="submit" name="submit" class="btn btn-primary mb-2">نمایش</button>
-                    <button type="button" name="export" class="btn btn-secondary mb-2" onclick="exportData()">ذخیره</button>
+                    <button type="button" name="export" class="btn btn-secondary mb-2" onclick="exportSpeedData()">ذخیره</button>
                 </form>
             </div>
         </div>

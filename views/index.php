@@ -91,20 +91,6 @@ echo "Welcome, " . htmlspecialchars($_SESSION['username']) . "!";
             .catch(error => console.error('Error fetching data:', error));
     }
 
-    function updateSpeedTable(data) {
-        const tableBody = document.getElementById('speedTable').getElementsByTagName('tbody')[0];
-        tableBody.innerHTML = '';
-
-        data.forEach(record => {
-            const row = tableBody.insertRow();
-            const cell1 = row.insertCell(0);
-            const cell2 = row.insertCell(1);
-            cell1.textContent = record.value !== null ? record.value : 'Silent';
-            cell2.textContent = record.time;
-        });
-    }
-
-
     function updateSpeedChart(data) {
         const ctx = document.getElementById('myChart').getContext('2d');
 
