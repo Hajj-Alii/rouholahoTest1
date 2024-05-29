@@ -12,10 +12,9 @@
     <script src="../assets/bootstrap/js/bootstrap.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.16.9/xlsx.full.min.js"></script>
-
-
     <title>Document</title>
 </head>
+<body>
 <?php
 require $_SERVER["DOCUMENT_ROOT"] . "/www/rouholahoTest1/controllers/UserController.php";
 session_start();
@@ -24,21 +23,15 @@ if(!UserController::isUserLoggedIn()){
     exit();
 }
 echo "Welcome, " . htmlspecialchars($_SESSION['username']) . "!";
-
-
 ?>
 
-<body>
 <div class="container-fluid vh-100">
     <div class="row h-100">
         <div class="col-lg-2 d-flex flex-column p-0 bg-dark text-light sidebar">
             <ul class="nav flex-column flex-lg-1">
-                <li class="nav-item"><a class="nav-link custom-link" href="#" onclick="showContent('speedView')">نمایش
-                        سرعت</a></li>
-                <li class="nav-item"><a class="nav-link custom-link" href="#" onclick="showContent('login')">تناژ
-                        تولید</a></li>
-                <li class="nav-item"><a class="nav-link custom-link" href="#" onclick="showContent('performance')">عملکرد
-                        شیفت ها</a></li>
+                <li class="nav-item"><a class="nav-link custom-link" href="#" onclick="showContent('speedView')">نمایش سرعت</a></li>
+                <li class="nav-item"><a class="nav-link custom-link" href="#" onclick="showContent('productionTonnage')">تناژ تولید</a></li>
+                <li class="nav-item"><a class="nav-link custom-link" href="#" onclick="showContent('performance')">عملکرد شیفت ها</a></li>
             </ul>
         </div>
         <div class="col-lg-9 content" id="content">
@@ -54,10 +47,12 @@ echo "Welcome, " . htmlspecialchars($_SESSION['username']) . "!";
             .then(html => {
                 document.getElementById('content').innerHTML = html;
                 if (page === 'speedView') {
-                    // If the loaded page is speedView.php, initialize the chart and table
                     initializeDatePickers();
-                    initializeForm();
-                    fetchAndDisplayData(); // Fetch default data
+                    initializeSpeedViewForm();
+                    fetchAndDisplaySpeedData();
+                } else if (page === 'productionTonnage') {
+                    initializeDatePickers();
+                    initializeProductionTonnageForm();
                 }
             })
             .catch(error => console.error('Error loading content:', error));
@@ -75,38 +70,51 @@ echo "Welcome, " . htmlspecialchars($_SESSION['username']) . "!";
         });
     }
 
-    function initializeForm() {
+    function initializeSpeedViewForm() {
         document.getElementById('dateRangeForm').addEventListener('submit', function(event) {
             event.preventDefault();
-            fetchAndDisplayData();
+            fetchAndDisplaySpeedData();
         });
     }
 
-    function fetchAndDisplayData() {
+    function fetchAndDisplaySpeedData() {
         const startDate = document.getElementById('startDate').value;
         const endDate = document.getElementById('endDate').value;
 
         fetch(`fetchSpeedRecords.php?startDate=${startDate}&endDate=${endDate}`)
             .then(response => response.json())
             .then(data => {
-                updateChart(data);
-                updateTable(data);
+                console.log(data); // Debugging: Check the fetched data
+                updateSpeedChart(data);
+                updateSpeedTable(data);
             })
             .catch(error => console.error('Error fetching data:', error));
     }
 
-    function updateChart(data) {
+    function updateSpeedTable(data) {
+        const tableBody = document.getElementById('speedTable').getElementsByTagName('tbody')[0];
+        tableBody.innerHTML = '';
+
+        data.forEach(record => {
+            const row = tableBody.insertRow();
+            const cell1 = row.insertCell(0);
+            const cell2 = row.insertCell(1);
+            cell1.textContent = record.value !== null ? record.value : 'Silent';
+            cell2.textContent = record.time;
+        });
+    }
+
+
+    function updateSpeedChart(data) {
         const ctx = document.getElementById('myChart').getContext('2d');
 
-        // Check if a chart instance already exists
         if (window.myChart instanceof Chart) {
-            window.myChart.destroy(); // Destroy the existing chart
+            window.myChart.destroy();
         }
 
         const values = data.map(record => record.value);
         const times = data.map(record => record.time);
 
-        // Create new Chart instance
         window.myChart = new Chart(ctx, {
             type: 'line',
             data: {
@@ -129,9 +137,9 @@ echo "Welcome, " . htmlspecialchars($_SESSION['username']) . "!";
         });
     }
 
-    function updateTable(data) {
+    function updateSpeedTable(data) {
         const tableBody = document.getElementById('speedTable').getElementsByTagName('tbody')[0];
-        tableBody.innerHTML = ''; // Clear existing rows
+        tableBody.innerHTML = '';
 
         data.forEach(record => {
             const row = tableBody.insertRow();
@@ -142,35 +150,89 @@ echo "Welcome, " . htmlspecialchars($_SESSION['username']) . "!";
         });
     }
 
-    function exportData() {
+    function exportSpeedData() {
         const table = document.getElementById('speedTable');
         const rows = Array.from(table.getElementsByTagName('tr'));
 
-        // Custom headers
         const headers = ['سرعت', 'تاریخ'];
-
-        // Prepare data
         const data = [headers];
         rows.slice(1).forEach(row => {
             const cells = Array.from(row.getElementsByTagName('td')).map(td => td.innerText);
             data.push(cells);
         });
 
-        // Create a new workbook and a worksheet
         const ws = XLSX.utils.aoa_to_sheet(data);
         const wb = XLSX.utils.book_new();
         XLSX.utils.book_append_sheet(wb, ws, 'SpeedRecords');
-
-        // Write the workbook to a file
         XLSX.writeFile(wb, 'speed_records.xlsx');
     }
 
-    // Initialize the content on page load
-    document.addEventListener('DOMContentLoaded', () => {
-        showContent('speedView');
-    });
+    function initializeProductionTonnageForm() {
+        document.getElementById('dateRangeForm').addEventListener('submit', function(event) {
+            event.preventDefault();
+            fetchAndDisplayTonnageData();
+        });
+    }
+
+    function fetchAndDisplayTonnageData() {
+        const startDate = document.getElementById('startDate').value;
+        const endDate = document.getElementById('endDate').value;
+
+        fetch(`fetchParamRecords.php?startDate=${startDate}&endDate=${endDate}`)
+            .then(response => response.json())
+            .then(data => {
+                updateTonnageTable(data);
+                showTonnageInputForm(data.length === 0);
+            })
+            .catch(error => console.error('Error fetching data:', error));
+    }
+
+    function updateTonnageTable(data) {
+        const tableBody = document.getElementById('tonnageTable').getElementsByTagName('tbody')[0];
+        tableBody.innerHTML = '';
+
+        data.forEach(record => {
+            const row = tableBody.insertRow();
+            const cell1 = row.insertCell(0);
+            const cell2 = row.insertCell(1);
+            const cell3 = row.insertCell(2);
+            const cell4 = row.insertCell(3);
+            cell1.textContent = record.time;
+            cell2.textContent = record.value;
+            cell3.textContent = record.width;
+            cell4.textContent = record.grammage;
+        });
+    }
+
+    function showTonnageInputForm(show) {
+        document.getElementById('tonnageInputForm').style.display = show ? 'block' : 'none';
+    }
+
+    function submitTonnageParams() {
+        const startDate = document.getElementById('startDate').value;
+        const endDate = document.getElementById('endDate').value;
+        const width = document.getElementById('width').value;
+        const grammage = document.getElementById('grammage').value;
+
+        fetch('insertTonnageParams.php', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ startDate, endDate, width, grammage })
+        })
+            .then(response => response.json())
+            .then(data => {
+                if (data.error) {
+                    alert('Error: ' + data.error);
+                } else {
+                    alert(data.message);
+                    fetchAndDisplayTonnageData();
+                }
+            })
+            .catch(error => console.error('Error inserting data:', error));
+    }
+
 </script>
-
-
 </body>
 </html>

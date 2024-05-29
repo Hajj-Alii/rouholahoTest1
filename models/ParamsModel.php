@@ -55,6 +55,25 @@ class ParamsModel
         }
     }
 
+
+    public static function selectParams(DateTime $startTime, DateTime $endTime)
+    {
+        DataAccess::connect();
+        try {
+
+            $statement = DataAccess::$pdo->prepare("SELECT * FROM testdb1.parameters WHERE time BETWEEN :startTime AND :endTime");
+            $startTime2 = $startTime->format("Y-m-d H:i:s");
+            $endTime2 = $endTime->format("Y-m-d H:i:s");
+            $statement->bindParam(':startTime', $startTime2);
+            $statement->bindParam(':endTime', $endTime2);
+            $statement->execute();
+            return $statement->fetchAll(PDO::FETCH_ASSOC);
+        }
+        catch (PDOException $exception){
+            echo "error: ". $exception->getMessage();
+        }
+    }
+
     public static function insertParams(DateTime $startTime, DateTime $endTime, $width, $grammage)
     {
         DataAccess::connect();

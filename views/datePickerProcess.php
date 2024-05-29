@@ -1,11 +1,15 @@
 <?php
-include $_SERVER["DOCUMENT_ROOT"] . "/www/rouholahoTest1/" . "vendor/autoload.php";
-use \Morilog\Jalali\Jalalian;
-use Carbon\Carbon;
+require $_SERVER["DOCUMENT_ROOT"] . "/www/rouholahoTest1/controllers/ParamsController.php";
 
-if(isset($_GET["startDate"]) && isset($_GET["endDate"])){
-    $startDate = $_GET["startDate"];
-    $endDate = $_GET["endDate"];
-    var_dump($startDate, $endDate);
+header('Content-Type: application/json');
 
+$startDate = $_GET['startDate'];
+$endDate = $_GET['endDate'];
+
+try {
+    $records = ParamsController::fetchParams($startDate, $endDate);
+    echo json_encode($records);
+} catch (Exception $e) {
+    echo json_encode(['error' => $e->getMessage()]);
 }
+
