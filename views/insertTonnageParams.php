@@ -4,7 +4,7 @@ require $_SERVER["DOCUMENT_ROOT"] . "/www/rouholahoTest1/controllers/ParamsContr
 
 // Log the received JSON data
 $requestPayload = file_get_contents('php://input');
-file_put_contents('request_log.txt', $requestPayload . PHP_EOL, FILE_APPEND);
+//file_put_contents('request_log.txt', $requestPayload . PHP_EOL, FILE_APPEND);
 
 header('Content-Type: application/json');
 
