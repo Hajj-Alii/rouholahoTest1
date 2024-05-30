@@ -8,11 +8,6 @@ use Carbon\Carbon;
 
 class ParamsModel
 {
-
-
-
-
-
     public static function fetchSpeeds_array(DateTime $startTime, DateTime $endTime, $width, $grammage)
     {
         DataAccess::connect();
@@ -24,10 +19,11 @@ class ParamsModel
             else {
                     foreach ($records as $record) {
                         $paramArray[] = [
-                            'value' => $record['value'],
+                            'speed' => $record['value'],
                             'time' => $record['time'],
                             'width' => $width,
-                            'grammage' => $grammage
+                            'grammage' => $grammage,
+                            'tonnage' => (double)$record['value'] * $width * $grammage
                         ];
                     }
                     return $paramArray;
@@ -56,7 +52,6 @@ class ParamsModel
                 $newRecord['time'] = self::gregorianToJalali($record['time']);
                 $items[] = $newRecord;
             }
-
             return $items;
         }
         catch (PDOException $exception){
@@ -70,17 +65,18 @@ class ParamsModel
         try {
             $paramArray = self::fetchSpeeds_array($startTime, $endTime, $width, $grammage);
             $stmt = DataAccess::$pdo->prepare("
-            INSERT INTO testdb1.parameters (time,speed, width, grammage)
-            VALUES (:time, :value, :width, :grammage)
+            INSERT INTO testdb1.parameters (time,speed, width, grammage, tonnage)
+            VALUES (:time, :speed, :width, :grammage, :tonnage);
         ");
             $startDateFormatted = $startTime->format("Y-m-d H:i:s");
             $endDateFormatted = $endTime->format("Y-m-d H:i:s");
 
             foreach ($paramArray as $params) {
                 $stmt->bindValue(':time', $params['time']);
-                $stmt->bindValue(':value', $params['value']);
+                $stmt->bindValue(':speed', $params['speed']);
                 $stmt->bindValue(':width', $params['width']);
                 $stmt->bindValue(':grammage', $params['grammage']);
+                $stmt->bindValue(':tonnage', $params['tonnage']);
                 $stmt->execute();
             }
             return $paramArray;

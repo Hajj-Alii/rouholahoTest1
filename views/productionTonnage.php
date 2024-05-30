@@ -27,6 +27,7 @@ require $_SERVER["DOCUMENT_ROOT"] . "/www/rouholahoTest1/controllers/ParamsContr
                     <th>سرعت</th>
                     <th>عرض</th>
                     <th>گرماژ</th>
+                    <th>تناژ</th>
                 </tr>
                 </thead>
                 <tbody>
@@ -48,4 +49,10 @@ require $_SERVER["DOCUMENT_ROOT"] . "/www/rouholahoTest1/controllers/ParamsContr
             <button type="button" onclick="submitTonnageParams()" class="btn btn-secondary mb-2">ذخیره</button>
         </div>
     </div>
+    <div class="row">
+        <div class="col-md-12">
+            <label id="totalTonnageLabel"></label>
+        </div>
+    </div>
+</div>
 </div>

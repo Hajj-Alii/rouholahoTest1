@@ -13,12 +13,13 @@
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.16.9/xlsx.full.min.js"></script>
     <title>Document</title>
+
 </head>
 <body>
 <?php
 require $_SERVER["DOCUMENT_ROOT"] . "/www/rouholahoTest1/controllers/UserController.php";
 session_start();
-if(!UserController::isUserLoggedIn()){
+if (!UserController::isUserLoggedIn()) {
     header("location: login.php");
     exit();
 }
@@ -29,9 +30,12 @@ echo "Welcome, " . htmlspecialchars($_SESSION['username']) . "!";
     <div class="row h-100">
         <div class="col-lg-2 d-flex flex-column p-0 bg-dark text-light sidebar">
             <ul class="nav flex-column flex-lg-1">
-                <li class="nav-item"><a class="nav-link custom-link" href="#" onclick="showContent('speedView')">نمایش سرعت</a></li>
-                <li class="nav-item"><a class="nav-link custom-link" href="#" onclick="showContent('productionTonnage')">تناژ تولید</a></li>
-                <li class="nav-item"><a class="nav-link custom-link" href="#" onclick="showContent('performance')">عملکرد شیفت ها</a></li>
+                <li class="nav-item"><a class="nav-link custom-link" href="#" onclick="showContent('speedView')">نمایش
+                        سرعت</a></li>
+                <li class="nav-item"><a class="nav-link custom-link" href="#"
+                                        onclick="showContent('productionTonnage')">تناژ تولید</a></li>
+                <li class="nav-item"><a class="nav-link custom-link" href="#" onclick="showContent('performance')">عملکرد
+                        شیفت ها</a></li>
             </ul>
         </div>
         <div class="col-lg-9 content" id="content">
@@ -71,7 +75,7 @@ echo "Welcome, " . htmlspecialchars($_SESSION['username']) . "!";
     }
 
     function initializeSpeedViewForm() {
-        document.getElementById('dateRangeForm').addEventListener('submit', function(event) {
+        document.getElementById('dateRangeForm').addEventListener('submit', function (event) {
             event.preventDefault();
             fetchAndDisplaySpeedData();
         });
@@ -84,7 +88,6 @@ echo "Welcome, " . htmlspecialchars($_SESSION['username']) . "!";
         fetch(`fetchSpeedRecords.php?startDate=${startDate}&endDate=${endDate}`)
             .then(response => response.json())
             .then(data => {
-                // console.log(data); // Debugging: Check the fetched data
                 updateSpeedChart(data);
                 updateSpeedTable(data);
             })
@@ -154,9 +157,11 @@ echo "Welcome, " . htmlspecialchars($_SESSION['username']) . "!";
     }
 
     function initializeProductionTonnageForm() {
-        document.getElementById('dateRangeForm').addEventListener('submit', function(event) {
+        document.getElementById('dateRangeForm').addEventListener('submit', function (event) {
             event.preventDefault();
             fetchAndDisplayTonnageData();
+            fetchAndDisplayTotalTonnage();
+
         });
     }
 
@@ -179,38 +184,48 @@ echo "Welcome, " . htmlspecialchars($_SESSION['username']) . "!";
         const tableBody = document.getElementById('tonnageTable').getElementsByTagName('tbody')[0];
         tableBody.innerHTML = '';
 
-        data.forEach(record => {
-            // console.log(record);
-            const row = tableBody.insertRow();
-            const cell1 = row.insertCell(0);
-            const cell2 = row.insertCell(1);
-            const cell3 = row.insertCell(2);
-            const cell4 = row.insertCell(3);
-            cell1.textContent = record.time;
-            cell2.textContent = record.speed;
-            cell3.textContent = record.width;
-            cell4.textContent = record.grammage;
-        });
+        if (data && Array.isArray(data)) {
+            data.forEach(record => {
+                const row = tableBody.insertRow();
+                const cell1 = row.insertCell(0);
+                const cell2 = row.insertCell(1);
+                const cell3 = row.insertCell(2);
+                const cell4 = row.insertCell(3);
+                const cell5 = row.insertCell(4);
+                cell1.textContent = record.time;
+                cell2.textContent = record.speed;
+                cell3.textContent = record.width;
+                cell4.textContent = record.grammage;
+                cell5.textContent = record.tonnage;
+            });
+        } else {
+            console.error('Invalid data format:', data);
+        }
     }
+
 
     function showTonnageInputForm(show) {
         document.getElementById('tonnageInputForm').style.display = show ? 'block' : 'none';
     }
+
 
     function submitTonnageParams() {
         const startDate = document.getElementById('startDate').value;
         const endDate = document.getElementById('endDate').value;
         const width = document.getElementById('width').value;
         const grammage = document.getElementById('grammage').value;
-
-        // console.log({ startDate, endDate, width, grammage }); // Log the data being sent
+        // Validate inputs
+        if (!startDate || !endDate || !width || !grammage) {
+            alert('Please fill out all fields.');
+            return;
+        }
 
         fetch('insertTonnageParams.php', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'
             },
-            body: JSON.stringify({ startDate, endDate, width, grammage })
+            body: JSON.stringify({startDate, endDate, width, grammage})
         })
             .then(response => response.json())
             .then(data => {
@@ -223,6 +238,27 @@ echo "Welcome, " . htmlspecialchars($_SESSION['username']) . "!";
                 }
             })
             .catch(error => console.error('Error inserting data:', error));
+    }
+
+    function fetchAndDisplayTotalTonnage() {
+        const startDate = document.getElementById('startDate').value;
+        const endDate = document.getElementById('endDate').value;
+
+        // Send start and end date/time to backend
+        fetch('calculateTotalTonnage.php', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ startDate, endDate })
+        })
+            .then(response => response.json())
+            .then(data => {
+                document.getElementById('totalTonnageLabel').textContent = 'Total Tonnage: ' + data.totalTonnage;
+                updateTonnageTable(data.records);
+                showTonnageInputForm(data.records.length === 0);
+            })
+            .catch(error => console.error('Error fetching data:', error));
     }
 
 
