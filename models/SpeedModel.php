@@ -17,8 +17,8 @@ class SpeedModel
         self::$data = new DataAccess();
         try {
             self::$data::connect();
-            $statement = self::$data::$pdo->prepare("INSERT INTO testdb1.speed(value, time) VALUES(:value, :time);");
-            $statement->execute([":value" => $value, ":time" => $dateTime->format("Y-m-d H:i:s")]);
+            $statement = self::$data::$pdo->prepare("INSERT INTO testdb1.speed(value, time, shift) VALUES(:value, :time, :shift);");
+            $statement->execute([":value" => $value, ":time" => $dateTime->format("Y-m-d H:i:s"), self::getCurrentShift($dateTime)]);
 
         } catch (PDOException $e) {
             echo "connection failed: " . $e->getMessage();
@@ -95,8 +95,9 @@ class SpeedModel
             $records = $statement->fetchAll(PDO::FETCH_ASSOC);
             foreach ($records as $record) {
                 $value = $record["value"] !== null ? $record["value"] : "null";
+                $shift = $record["shift"] !== null ? $record["shift"] : "null";
                 $time = self::gregorianToJalali($record["time"])->format("Y-m-d H:i:s");
-                $speedArray[] = ["value" => $value, "time" => $time];
+                $speedArray[] = ["value" => $value, "time" => $time, "shift" => $shift];
 
             }
 
@@ -142,7 +143,6 @@ class SpeedModel
     public static function getRawRecords(DateTime $startDate, DateTime $endDate)
     {
         self::$data = new DataAccess();
-
         try {
             self::$data::connect();
             $statement = self::$data::$pdo->prepare("SELECT * FROM testdb1.speed WHERE time BETWEEN :start_date AND :end_date;");
@@ -198,7 +198,8 @@ class SpeedModel
                     $resultRecords[] = [
                         'time' => self::gregorianToJalali_str($currentSilentTime->format('Y-m-d H:i:s')),
                         'value' => null, // "silent times" value
-                        'status' => 'silent',
+                        'status' => 'silent'
+
                     ];
                     $currentSilentTime->add(new DateInterval('PT1M')); // Increment by 1 minute
                 }
@@ -220,7 +221,8 @@ class SpeedModel
                     $resultRecords[] = [
                         'time' => self::gregorianToJalali_str($record['time']),
                         'value' => $record['value'],
-                        'status' => 'active',
+                        'shift' => $record['shift'],
+                        'status' => 'active'
                     ];
 
                     // Update lastRecordTime for the next iteration
@@ -270,6 +272,25 @@ class SpeedModel
     {
         $formmatedDate = str_replace("/", "-", self::convertPersianToEnglish($jalaliDateTime));
         return Carbon::createFromTimestamp(Jalalian::fromFormat("Y-m-d H:i:s", $formmatedDate)->getTimestamp());
+    }
+
+    public static function getCurrentShift($currentDateTime) {
+        $shiftStartDate = new DateTime('2024-03-20 00:00:00');
+
+        // Define shift durations in hours
+        $shiftDuration = 12;
+        $totalCycleDuration = 3 * $shiftDuration;  // Total cycle of 3 shifts (36 hours)
+
+        // Calculate the total hours passed since the shift start date
+        $interval = $shiftStartDate->diff($currentDateTime);
+        $totalHoursPassed = ($interval->days * 24) + $interval->h + ($interval->i / 60) + ($interval->s / 3600);
+
+        // Determine which shift the current time falls into
+        $shiftIndex = (int)($totalHoursPassed / $shiftDuration) % 3;
+
+        // Map the shift index to the shift name
+        $shifts = ['A', 'B', 'C'];
+        return $shifts[$shiftIndex];
     }
 
 

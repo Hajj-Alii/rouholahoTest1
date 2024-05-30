@@ -59,7 +59,6 @@ class ParamsController{
             echo "end time {$endTime2->format("Y-m-d H:i:s")} is older than start time {$endTime2->format("Y-m-d H:i:s")}";
 
     }
-
     public static function calculate_totalTonnage($startTime, $endTime){
         $startTimeGregorian = self::jalaliToGregorian_DateTime($startTime);
         $endTimeGregorian = self::jalaliToGregorian_DateTime($endTime);

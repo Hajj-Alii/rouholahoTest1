@@ -7,7 +7,6 @@ $endDate = $_GET['endDate'];
 
 $ctrl = new SpeedController();
 $records = $ctrl::fetchRecords_jalaliToGregorian($startDate, $endDate);
-//safsdsadfas
 $formattedRecords = [];
 
 foreach ($records as $record) {
@@ -18,12 +17,12 @@ foreach ($records as $record) {
     $formattedRecord = [
         'value' => $value,
         'time' => $record['time']
+//        'shift' => $record['shift']
     ];
 
     // Add the formatted record to the new array
     $formattedRecords[] = $formattedRecord;
 }
-//helolk
 
 // Encode the formatted records as JSON
 $encodedRecords = json_encode($formattedRecords);

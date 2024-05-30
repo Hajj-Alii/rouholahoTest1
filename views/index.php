@@ -88,6 +88,7 @@ echo "Welcome, " . htmlspecialchars($_SESSION['username']) . "!";
         fetch(`fetchSpeedRecords.php?startDate=${startDate}&endDate=${endDate}`)
             .then(response => response.json())
             .then(data => {
+                // console.log(data);
                 updateSpeedChart(data);
                 updateSpeedTable(data);
             })
@@ -134,8 +135,10 @@ echo "Welcome, " . htmlspecialchars($_SESSION['username']) . "!";
             const row = tableBody.insertRow();
             const cell1 = row.insertCell(0);
             const cell2 = row.insertCell(1);
+            const cell3 = row.insertCell(2);
             cell1.textContent = record.value !== null ? record.value : 'Silent';
             cell2.textContent = record.time;
+            cell3.textContent = record.shift;
         });
     }
 
@@ -143,7 +146,7 @@ echo "Welcome, " . htmlspecialchars($_SESSION['username']) . "!";
         const table = document.getElementById('speedTable');
         const rows = Array.from(table.getElementsByTagName('tr'));
 
-        const headers = ['سرعت', 'تاریخ'];
+        const headers = ['سرعت', 'تاریخ', 'شیفت'];
         const data = [headers];
         rows.slice(1).forEach(row => {
             const cells = Array.from(row.getElementsByTagName('td')).map(td => td.innerText);

@@ -37,6 +37,7 @@ $records = $ctrl::readAll();
                 <tr>
                     <th scope="col">سرعت</th>
                     <th scope="col">تاریخ</th>
+                    <th scope="col">شیفت</th>
                 </tr>
                 </thead>
                 <tbody>
