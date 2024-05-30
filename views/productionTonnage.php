@@ -54,5 +54,11 @@ require $_SERVER["DOCUMENT_ROOT"] . "/www/rouholahoTest1/controllers/ParamsContr
             <label id="totalTonnageLabel"></label>
         </div>
     </div>
+    <div class="row">
+        <div class="col-md-12">
+            <label id="totalTonnageLabel"></label>
+            <button type="button" onclick="exportTonnageData()" class="btn btn-success ml-2">خروجی</button>
+        </div>
+    </div>
 </div>
 </div>

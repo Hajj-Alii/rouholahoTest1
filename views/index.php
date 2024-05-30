@@ -240,25 +240,42 @@ echo "Welcome, " . htmlspecialchars($_SESSION['username']) . "!";
             .catch(error => console.error('Error inserting data:', error));
     }
 
-    function fetchAndDisplayTotalTonnage() {
-        const startDate = document.getElementById('startDate').value;
-        const endDate = document.getElementById('endDate').value;
+    // function fetchAndDisplayTotalTonnage() {
+    //     const startDate = document.getElementById('startDate').value;
+    //     const endDate = document.getElementById('endDate').value;
+    //
+    //     // Send start and end date/time to backend
+    //     fetch('calculateTotalTonnage.php', {
+    //         method: 'POST',
+    //         headers: {
+    //             'Content-Type': 'application/json'
+    //         },
+    //         body: JSON.stringify({ startDate, endDate })
+    //     })
+    //         .then(response => response.json())
+    //         .then(data => {
+    //             document.getElementById('totalTonnageLabel').textContent = 'Total Tonnage: ' + data.totalTonnage;
+    //             updateTonnageTable(data.records);
+    //             showTonnageInputForm(data.records.length === 0);
+    //         })
+    //         .catch(error => console.error('Error fetching data:', error));
+    // }
 
-        // Send start and end date/time to backend
-        fetch('calculateTotalTonnage.php', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify({ startDate, endDate })
-        })
-            .then(response => response.json())
-            .then(data => {
-                document.getElementById('totalTonnageLabel').textContent = 'Total Tonnage: ' + data.totalTonnage;
-                updateTonnageTable(data.records);
-                showTonnageInputForm(data.records.length === 0);
-            })
-            .catch(error => console.error('Error fetching data:', error));
+    function exportTonnageData() {
+        const table = document.getElementById('tonnageTable');
+        const rows = Array.from(table.getElementsByTagName('tr'));
+
+        const headers = ['تاریخ', 'سرعت', 'عرض', 'گرماژ', 'تناژ'];
+        const data = [headers];
+        rows.forEach(row => {
+            const cells = Array.from(row.getElementsByTagName('td')).map(td => td.innerText);
+            data.push(cells);
+        });
+
+        const ws = XLSX.utils.aoa_to_sheet(data);
+        const wb = XLSX.utils.book_new();
+        XLSX.utils.book_append_sheet(wb, ws, 'TonnageRecords');
+        XLSX.writeFile(wb, 'tonnage_records.xlsx');
     }
 
 
