@@ -78,10 +78,8 @@ class SpeedController
         $array = [];
         self::$speed = new SpeedModel();
         $records = self::$speed::readAllAsJalali();
-        foreach ($records as $value => $time)
-            $array[$value] = $time;
-
-
+        foreach ($records as $record)
+            $array[] = ['value' => $record['value'], 'time' => $record["time"], "shift" => $record["shift"]];
         return $array;
     }
 
@@ -110,18 +108,20 @@ class SpeedController
     public static function fetchRecords_jalaliToGregorian($startDate, $endDate)
     {
 //        if (self::isStartOlder($startDate, $endDate))
-            return SpeedModel::getRecords(self::jalaliToGregorian_DateTime($startDate), self::jalaliToGregorian_DateTime($endDate));
+        return SpeedModel::getRecords(self::jalaliToGregorian_DateTime($startDate), self::jalaliToGregorian_DateTime($endDate));
 //        else
 //            echo "{$endDate->format("Y-m-d H:i:s")} is older than {$startDate->format("Y-m-d H:i:s")}";
 
     }
-    public static  function fetchRecords_gregorian($startDate, $endDate)
+
+    public static function fetchRecords_gregorian($startDate, $endDate)
     {
-        if(self::isStartOlder($startDate, $endDate))
+        if (self::isStartOlder($startDate, $endDate))
             return SpeedModel::getRecords($startDate, $endDate);
         else
             echo "{$startDate->format("Y-m-d H:i:s")} is older than {$endDate->format("Y-m-d H:i:s")}";
     }
+
     public static function fetchAllRecords2()
     {
         return self::fetchRecords_gregorian(SpeedModel::fetchFirstRecord_Time(), new DateTime("now", new DateTimeZone("Asia/Tehran")));
