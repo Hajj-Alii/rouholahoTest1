@@ -45,9 +45,9 @@ require $_SERVER["DOCUMENT_ROOT"] . "/www/rouholahoTest1/controllers/SpeedContro
 $records2 = SpeedController::fetchRecords_jalaliToGregorian("۱۴۰۳/۰۳/۱۲ ۱۷:۲۹:۴۷", "۱۴۰۳/۰۳/۱۲ ۱۷:۴۰:۴۷");
 //echo SpeedController::jalaliToGregorian_DateTime(SpeedModel::gregorianToJalali_str("2024-06-01 17:29:47"));
 //var_dump(SpeedModel::getRecords2(SpeedController::jalaliToGregorian_DateTime("۱۴۰۳/۰۳/۱۲ ۱۷:۲۹:۴۷"), SpeedController::jalaliToGregorian_DateTime("۱۴۰۳/۰۳/۱۲ ۱۷:۳۹:۴۷")));
-
-var_dump(SpeedModel::getRecords2(new DateTime("2024-06-01 17:29:47"), new DateTime("2024-06-01 17:40:52")));
-var_dump($records2);
+//
+//var_dump(SpeedModel::getRecords2(new DateTime("2024-06-01 17:29:47"), new DateTime("2024-06-01 17:40:52")));
+//var_dump($records2);
 //echo "<br/>". SpeedModel::gregorianToJalali_str("2024-06-01 17:29:47");
 //$formattedRecords = array();
 //foreach ($records as $record)
@@ -55,4 +55,6 @@ var_dump($records2);
 //var_dump($records);
 //var_dump($records2);
 
+//var_dump(SpeedModel::getShiftRecords(new DateTime("2024-05-30 19:57:38"), new DateTime("2024-05-30 20:01:38"), "C"));
+var_dump(SpeedController::getShiftRecords("۱۴۰۳/۰۳/۱۰ ۱۹:۵۷:۰۲", "۱۴۰۳/۰۳/۱۰ ۲۱:۰۲:۰۳", "C"));
 ?>

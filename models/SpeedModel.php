@@ -380,5 +380,20 @@ class SpeedModel
         return $shifts[$shiftIndex];
     }
 
+    public static function getShiftRecords(DateTime $startDate, DateTime $endDate, $shift)
+    {
+        self::$data = new DataAccess();
+        try {
+            self::$data::connect();
+            $statement = self::$data::$pdo->prepare("SELECT value from testdb1.speed WHERE time BETWEEN :startDate and :endDate AND shift=:shift;");
+            $statement->execute([':startDate' => $startDate->format("Y-m-d H:i:s"), ':endDate' => $endDate->format("Y-m-d H:i:s"), ':shift' => $shift]);
+            $records = $statement->fetchAll(PDO::FETCH_ASSOC);
+            return $records;
+        }
+        catch (PDOException $exception){
+            echo "Error connection: " . $exception->getMessage();
+        }
+    }
+
 
 }

@@ -92,7 +92,7 @@ echo "Welcome, " . htmlspecialchars($_SESSION['username']) . "!";
             .then(response => response.json())
             .then(data => {
                 displayShiftPerformanceResult(data);
-                displayShiftPerformanceCalculations(data);
+                // displayShiftPerformanceCalculations(data);
             })
             .catch(error => console.error('Error fetching shift performance data:', error));
     }

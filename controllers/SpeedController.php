@@ -14,6 +14,27 @@ class SpeedController
         return $startDate <= $endDate;
     }
 
+    public static function shiftExists($records, $shift)
+    {
+        foreach ($records as $record)
+            if($record['shift'] == $shift)
+                return true;
+        return false;
+    }
+
+    public static function getShiftRecords($startDate, $endDate, $shift)
+    {
+        $records = SpeedModel::getRecords2(self::jalaliToGregorian_DateTime($startDate), self::jalaliToGregorian_DateTime($endDate));
+        $report = [];
+        $active = $silent = 0;
+        if (self::shiftExists($records, $shift))
+            foreach ($records as $record){
+                if($record['value'] > 0 && $record['shift'] == $shift) $active ++;
+                else $silent ++;
+            }
+        return ['active' => $active, 'silent' => $silent];
+    }
+
 
     public static function NMin_Ago_Jalali($minAgo, Jalalian $jalalianDateTime, DateTimeZone $timeZone)
     {
