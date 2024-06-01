@@ -35,7 +35,8 @@ require $_SERVER["DOCUMENT_ROOT"] . "/www/rouholahoTest1/controllers/SpeedContro
 
 
 //var_dump(SpeedController::readAll());
-
-var_dump(SpeedModel::getRecords(new DateTime("2024-05-31 19:22:51", new DateTimeZone("Asia/Tehran")), new DateTime("2024-05-31 19:25:51", new DateTimeZone("Asia/Tehran"))));
+//var_dump(SpeedModel::getRawRecords(new DateTime("2024-05-31 22:25:24"), new DateTime("2024-05-31 22:33:24", new DateTimeZone("Asia/Tehran"))));
+var_dump(SpeedModel::getRawRecords(new DateTime("2024-06-01 17:29:53", new DateTimeZone("Asia/Tehran")), new DateTime("2024-06-01 17:42:53", new DateTimeZone("Asia/Tehran"))));
+var_dump(SpeedModel::getRecords2(new DateTime("2024-06-01 17:45:53", new DateTimeZone("Asia/Tehran")), new DateTime("2024-06-01 17:55:53", new DateTimeZone("Asia/Tehran"))));
 
 ?>

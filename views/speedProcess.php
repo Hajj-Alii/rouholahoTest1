@@ -6,7 +6,7 @@ use \Morilog\Jalali\Jalalian;
 
 $ctrl = new SpeedController();
 $timeZone = new DateTimeZone("Asia/Tehran");
-$nowDateTime = new DateTime("2024-05-30 20:01:38", $timeZone);
+$nowDateTime = new DateTime("now", $timeZone);
 
 $nameArray = [
     "spd5",

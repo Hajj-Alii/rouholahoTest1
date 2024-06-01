@@ -44,8 +44,8 @@ class SpeedModel
             echo "connection failed: " . $e->getMessage();
         }
     }
-    #endregion
 
+    #endregion
 
 
     public static function fetchFirstRecord_Time()
@@ -58,9 +58,7 @@ class SpeedModel
             $firstDateTime = new DateTime($statement->fetch(PDO::FETCH_ASSOC)['time'], new DateTimeZone("Asia/Tehran"));
             return $firstDateTime;
 
-        }
-        catch (PDOException $e)
-        {
+        } catch (PDOException $e) {
             echo "connection failed: " . $e->getMessage();
         }
 
@@ -75,12 +73,10 @@ class SpeedModel
             $statement->execute();
             $firstRecord = $statement->fetch(PDO::FETCH_ASSOC);
             return $firstRecord;
-        }
-        catch (PDOException $e){
+        } catch (PDOException $e) {
             echo "connection error: " . $e->getMessage();
         }
     }
-
 
 
     #region readAllAsJalali
@@ -115,6 +111,7 @@ class SpeedModel
         return jdate(strtotime($dateTime));
 
     }
+
     public static function gregorianToJalali_str(string $dateTime)
     {
         return jdate(strtotime($dateTime))->format("Y-m-d H:i:s");
@@ -134,6 +131,24 @@ class SpeedModel
 
         } catch (PDOException $e) {
             echo "connection failed: " . $e->getMessage();
+        }
+    }
+
+
+    public static function getRecord(DateTime $dateTime)
+    {
+        self::$data = new DataAccess();
+        try {
+            self::$data::connect();
+            $statement = self::$data::$pdo->prepare("SELECT * FROM testDb1.speed WHERE time = :dateTime;");
+            $formattedDate = $dateTime->format("Y-m-d H:i:s");
+            $statement->bindParam(":dateTime", $formattedDate);
+            $statement->execute();
+            $result = $statement->fetch(PDO::FETCH_ASSOC);
+            return $result;
+        } catch (PDOException $exception) {
+            echo 'connection failed: ', $exception->getMessage();
+            return false;
         }
     }
 
@@ -165,30 +180,13 @@ class SpeedModel
             return [];
         }
     }
-
-
-    public static function getRecord(DateTime $dateTime)
-    {
-        self::$data = new DataAccess();
-        try {
-            self::$data::connect();
-            $statement = self::$data::$pdo->prepare("SELECT * FROM testDb1.speed WHERE time = :dateTime;");
-            $formattedDate = $dateTime->format("Y-m-d H:i:s");
-            $statement->bindParam(":dateTime", $formattedDate);
-            $statement->execute();
-            $result = $statement->fetch(PDO::FETCH_ASSOC);
-            return $result;
-        } catch (PDOException $exception) {
-            echo 'connection failed: ', $exception->getMessage();
-            return false;
-        }
-    }
-
     public static function getRecords(DateTime $startDate, DateTime $endDate)
     {
         self::$data = new DataAccess();
 
         try {
+            self::$data::connect();
+
             $records = self::getRawRecords($startDate, $endDate);
 
             // Initialize result array
@@ -197,52 +195,58 @@ class SpeedModel
 
             if (empty($records)) {
                 // No records found, fill the entire range with silent records
-                $resultRecords[] = [
-                    'time' => self::gregorianToJalali_str($startDate->format('Y-m-d H:i:s')),
-                    'value' => null,
-                    'status' => 'silent',
-                    'shift' => self::getCurrentShift($startDate)
-                ];
+                while ($lastRecordTime <= $endDate) {
+                    echo "whole silent Filling silent record: " . $lastRecordTime->format('Y-m-d H:i:s') . "\n";
+                    $resultRecords[] = [
+                        'time' => self::gregorianToJalali_str($lastRecordTime->format('Y-m-d H:i:s')),
+                        'value' => null, // "silent times" value
+                        'shift' => self::getCurrentShift($lastRecordTime), // Add shift
+                        'status' => 'silent'
+                    ];
+                    $lastRecordTime->add(new DateInterval('PT1M')); // Increment by 1 minute
+                }
             } else {
                 foreach ($records as $record) {
                     $currentRecordTime = new DateTime($record['time']);
-
-                    // Fill gaps before the current record
-                    while ($lastRecordTime < $currentRecordTime) {
-                        if ($lastRecordTime <= $endDate) {
-                            $resultRecords[] = [
-                                'time' => self::gregorianToJalali_str($lastRecordTime->format('Y-m-d H:i:s')),
-                                'value' => null, // "silent times" value
-                                'status' => 'silent',
-                                'shift' => self::getCurrentShift($lastRecordTime) // Calculate shift for silent times
-                            ];
-                        }
+                    // Fill gaps before the first record
+                    while ($lastRecordTime < $currentRecordTime && $lastRecordTime <= $endDate) {
+                        echo "currentRecordTime: {$currentRecordTime->format("Y-m-d H:i:s")}, lastRecord:  " . $lastRecordTime->format('Y-m-d H:i:s') . "\n";
+                        $resultRecords[] = [
+                            'time' => self::gregorianToJalali_str($lastRecordTime->format('Y-m-d H:i:s')),
+                            'value' => null, // "silent times" value
+                            'shift' => self::getCurrentShift($lastRecordTime), // Add shift
+                            'status' => 'silent',
+                        ];
                         $lastRecordTime->add(new DateInterval('PT1M'));
                     }
 
-                    // Add the current active record
-                    $resultRecords[] = [
-                        'time' => self::gregorianToJalali_str($record['time']),
-                        'value' => $record['value'],
-                        'shift' => $record['shift'],
-                        'status' => 'active'
-                    ];
+                    // Add the current active record if it's within the range
+                    if ($currentRecordTime >= $startDate && $currentRecordTime <= $endDate) {
+                        echo "Adding active record: " . $currentRecordTime->format('Y-m-d H:i:s') . "\n";
+                        $resultRecords[] = [
+                            'time' => self::gregorianToJalali_str($record['time']),
+                            'value' => $record['value'],
+                            'shift' => $record['shift'], // Add shift from record
+                            'status' => 'active'
+                        ];
+                    }
 
                     // Update lastRecordTime for the next iteration
                     $lastRecordTime = clone $currentRecordTime;
                     $lastRecordTime->add(new DateInterval('PT1M')); // Move to the next minute
                 }
-            }
 
-            // Add silent records after the last active record until reaching endDate
-            while ($lastRecordTime <= $endDate) {
-                $resultRecords[] = [
-                    'time' => self::gregorianToJalali_str($lastRecordTime->format('Y-m-d H:i:s')),
-                    'value' => null, // "silent times" value
-                    'status' => 'silent',
-                    'shift' => self::getCurrentShift($lastRecordTime) // Calculate shift for silent times
-                ];
-                $lastRecordTime->add(new DateInterval('PT1M'));
+                // Fill gaps after the last record up to endDate
+                while ($lastRecordTime <= $endDate) {
+                    echo "last while Filling silent record: " . $lastRecordTime->format('Y-m-d H:i:s') . "\n";
+                    $resultRecords[] = [
+                        'time' => self::gregorianToJalali_str($lastRecordTime->format('Y-m-d H:i:s')),
+                        'value' => null, // "silent times" value
+                        'shift' => self::getCurrentShift($lastRecordTime), // Add shift
+                        'status' => 'silent',
+                    ];
+                    $lastRecordTime->add(new DateInterval('PT1M'));
+                }
             }
 
             return $resultRecords; // Return the combined set of fetched records and generated "silent times" records
@@ -251,6 +255,58 @@ class SpeedModel
             return []; // Return an empty array on failure
         }
     }
+
+    public static function getRecords2(DateTime $startDate, DateTime $endDate)
+    {
+        // Fetch raw records
+        $rawRecords = self::getRawRecords($startDate, $endDate);
+
+        // Create an associative array to quickly access records by their time
+        $recordsByTime = [];
+        foreach ($rawRecords as $record) {
+            $recordsByTime[$record['time']] = $record;
+        }
+
+        // Initialize the result array
+        $result = [];
+
+        // Loop through each minute between startDate and endDate
+        $interval = new DateInterval('PT1M');
+        $period = new DatePeriod($startDate, $interval, $endDate);
+
+        foreach ($period as $dt) {
+            $formattedTime = $dt->format('Y-m-d H:i:s');
+
+            if (isset($recordsByTime[$formattedTime])) {
+                // If a record exists for this time, add it to the result
+                $result[] = $recordsByTime[$formattedTime];
+            } else {
+                // Otherwise, create a record with value 0
+                $result[] = [
+                    'value' => 0,
+                    'time' => self::gregorianToJalali_str($formattedTime),
+                    'shift' => self::getCurrentShift($dt)
+                ];
+            }
+        }
+
+        // Manually add the end date record if not already added
+        $endFormattedTime = $endDate->format('Y-m-d H:i:s');
+        if (!isset($recordsByTime[$endFormattedTime])) {
+            $result[] = [
+                'value' => 0,
+                'time' => self::gregorianToJalali_str($endFormattedTime),
+                'shift' => self::getCurrentShift($endDate)
+            ];
+        } else {
+            $result[] = $recordsByTime[$endFormattedTime];
+        }
+
+        return $result;
+    }
+
+
+
 
 
 
@@ -279,7 +335,8 @@ class SpeedModel
         return Carbon::createFromTimestamp(Jalalian::fromFormat("Y-m-d H:i:s", $formmatedDate)->getTimestamp());
     }
 
-    public static function getCurrentShift($currentDateTime) {
+    public static function getCurrentShift($currentDateTime)
+    {
         $shiftStartDate = new DateTime('2024-03-20 00:00:00', new DateTimeZone("Asia/Tehran"));
         $shiftDuration = 12;
         $interval = $shiftStartDate->diff($currentDateTime);
