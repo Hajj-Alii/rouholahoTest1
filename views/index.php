@@ -34,7 +34,7 @@ echo "Welcome, " . htmlspecialchars($_SESSION['username']) . "!";
                         سرعت</a></li>
                 <li class="nav-item"><a class="nav-link custom-link" href="#"
                                         onclick="showContent('productionTonnage')">تناژ تولید</a></li>
-                <li class="nav-item"><a class="nav-link custom-link" href="#" onclick="showContent('performance')">عملکرد
+                <li class="nav-item"><a class="nav-link custom-link" href="#" onclick="showContent('shiftsPerformance')">عملکرد
                         شیفت ها</a></li>
             </ul>
         </div>
@@ -57,6 +57,9 @@ echo "Welcome, " . htmlspecialchars($_SESSION['username']) . "!";
                 } else if (page === 'productionTonnage') {
                     initializeDatePickers();
                     initializeProductionTonnageForm();
+                } else if (page === 'shiftsPerformance') {
+                    initializeDatePickers();
+                    initializeShiftPerformanceForm();
                 }
             })
             .catch(error => console.error('Error loading content:', error));
@@ -73,7 +76,26 @@ echo "Welcome, " . htmlspecialchars($_SESSION['username']) . "!";
             }
         });
     }
+    function initializeShiftPerformanceForm() {
+        document.getElementById('shiftPerformanceForm').addEventListener('submit', function (event) {
+            event.preventDefault();
+            fetchAndDisplayShiftPerformanceData();
+        });
+    }
 
+    function fetchAndDisplayShiftPerformanceData() {
+        const startDate = document.getElementById('startDate').value;
+        const endDate = document.getElementById('endDate').value;
+        const shift = document.getElementById('shift').value;
+
+        fetch(`fetchShiftPerformance.php?startDate=${startDate}&endDate=${endDate}&shift=${shift}`)
+            .then(response => response.json())
+            .then(data => {
+                displayShiftPerformanceResult(data);
+                displayShiftPerformanceCalculations(data);
+            })
+            .catch(error => console.error('Error fetching shift performance data:', error));
+    }
     function initializeSpeedViewForm() {
         document.getElementById('dateRangeForm').addEventListener('submit', function (event) {
             event.preventDefault();

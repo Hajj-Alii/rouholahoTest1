@@ -10,26 +10,18 @@ $records = $ctrl::fetchRecords_jalaliToGregorian($startDate, $endDate);
 $formattedRecords = [];
 
 foreach ($records as $record) {
-    // Determine the value based on the status
-    $value = $record['value'];
-
-    // Construct the new associative array with 'value' and 'time' fields
     $formattedRecord = [
-        'value' => $value,
+        'value' => $record['value'],
         'time' => $record['time'],
         'shift' => $record['shift']
     ];
 
-    // Add the formatted record to the new array
     $formattedRecords[] = $formattedRecord;
 }
 
-// Encode the formatted records as JSON
 $encodedRecords = json_encode($formattedRecords);
 
-// Set the content type header to JSON
 header('Content-Type: application/json');
 
-// Output the JSON response
 echo $encodedRecords;
 ?>

@@ -42,12 +42,12 @@ require $_SERVER["DOCUMENT_ROOT"] . "/www/rouholahoTest1/controllers/SpeedContro
 
 //var_dump(SpeedModel::getRecords2(new DateTime("2024-06-01 17:29:53"), new DateTime("2024-06-01 17:39:53")));
 //$records = SpeedModel::getRecords2(new DateTime("2024-06-01 17:29:53"), new DateTime("2024-06-01 17:39:53"));
-$records2 = SpeedController::fetchRecords_jalaliToGregorian("۱۴۰۳/۰۳/۱۲ ۱۷:۲۹:۴۷", "۱۴۰۳/۰۳/۱۲ ۱۷:۳۹:۴۷");
+$records2 = SpeedController::fetchRecords_jalaliToGregorian("۱۴۰۳/۰۳/۱۲ ۱۷:۲۹:۴۷", "۱۴۰۳/۰۳/۱۲ ۱۷:۴۰:۴۷");
 //echo SpeedController::jalaliToGregorian_DateTime(SpeedModel::gregorianToJalali_str("2024-06-01 17:29:47"));
 //var_dump(SpeedModel::getRecords2(SpeedController::jalaliToGregorian_DateTime("۱۴۰۳/۰۳/۱۲ ۱۷:۲۹:۴۷"), SpeedController::jalaliToGregorian_DateTime("۱۴۰۳/۰۳/۱۲ ۱۷:۳۹:۴۷")));
 
-var_dump(SpeedModel::getRecords2(new DateTime("2024-06-01 17:20:13"), new DateTime("2024-06-01 17:43:47")));
-
+var_dump(SpeedModel::getRecords2(new DateTime("2024-06-01 17:29:47"), new DateTime("2024-06-01 17:40:52")));
+var_dump($records2);
 //echo "<br/>". SpeedModel::gregorianToJalali_str("2024-06-01 17:29:47");
 //$formattedRecords = array();
 //foreach ($records as $record)
