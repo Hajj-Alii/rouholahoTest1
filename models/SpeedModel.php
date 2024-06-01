@@ -169,17 +169,16 @@ class SpeedModel
             $statement->bindParam(':end_date', $endDateFormatted);
             $statement->execute();
             $records = $statement->fetchAll(PDO::FETCH_ASSOC);
-            if (empty($records)) {
-                echo "No records found between " . $startDateFormatted . " and " . $endDateFormatted . ".";
-            } else {
-                echo "Records fetched successfully.";
-            }
+//            if (empty($records))
+//                echo "No records found between " . $startDateFormatted . " and " . $endDateFormatted . ".";
             return $records;
         } catch (PDOException $e) {
             echo "Connection failed: " . $e->getMessage();
             return [];
         }
     }
+
+    #region getRecords
     public static function getRecords(DateTime $startDate, DateTime $endDate)
     {
         self::$data = new DataAccess();
@@ -255,58 +254,93 @@ class SpeedModel
             return []; // Return an empty array on failure
         }
     }
-
+    #endregion
     public static function getRecords2(DateTime $startDate, DateTime $endDate)
     {
-        // Fetch raw records
-        $rawRecords = self::getRawRecords($startDate, $endDate);
+        self::$data = new DataAccess();
 
-        // Create an associative array to quickly access records by their time
-        $recordsByTime = [];
-        foreach ($rawRecords as $record) {
-            $recordsByTime[$record['time']] = $record;
-        }
+        try {
+            $records = self::getRawRecords($startDate, $endDate);
 
-        // Initialize the result array
-        $result = [];
+            // Initialize result array
+            $resultRecords = [];
+            $lastRecordTime = $startDate;
 
-        // Loop through each minute between startDate and endDate
-        $interval = new DateInterval('PT1M');
-        $period = new DatePeriod($startDate, $interval, $endDate);
-
-        foreach ($period as $dt) {
-            $formattedTime = $dt->format('Y-m-d H:i:s');
-
-            if (isset($recordsByTime[$formattedTime])) {
-                // If a record exists for this time, add it to the result
-                $result[] = $recordsByTime[$formattedTime];
+            if (empty($records)) {
+                // No records found, fill the entire range with silent records
+                $currentSilentTime = clone $startDate;
+                while ($currentSilentTime <= $endDate) {
+                    // Check if there is no active record already present for this minute
+                    if (!self::hasActiveRecord($currentSilentTime, $records)) {
+                        $resultRecords[] = [
+                            'time' => self::gregorianToJalali_str($currentSilentTime->format('Y-m-d H:i:s')),
+                            'value' => 0, // "silent times" value
+                            'shift' => self::getCurrentShift($currentSilentTime),
+                        ];
+                    }
+                    $currentSilentTime->add(new DateInterval('PT1M')); // Increment by 1 minute
+                }
             } else {
-                // Otherwise, create a record with value 0
-                $result[] = [
-                    'value' => 0,
-                    'time' => self::gregorianToJalali_str($formattedTime),
-                    'shift' => self::getCurrentShift($dt)
-                ];
+                foreach ($records as $record) {
+                    $currentRecordTime = new DateTime($record['time']);
+
+                    // Fill gaps before the first record
+                    while ($lastRecordTime < $currentRecordTime) {
+                        // Check if there is no active record already present for this minute
+                        if (!self::hasActiveRecord($lastRecordTime, $records)) {
+                            $resultRecords[] = [
+                                'time' => self::gregorianToJalali_str($lastRecordTime->format('Y-m-d H:i:s')),
+                                'value' => 0, // "silent times" value
+                                'shift' => self::getCurrentShift($lastRecordTime),
+                            ];
+                        }
+                        $lastRecordTime->add(new DateInterval('PT1M'));
+                    }
+
+                    // Add the current active record
+                    $resultRecords[] = [
+                        'time' => self::gregorianToJalali_str($record['time']),
+                        'value' => $record['value'],
+                        'shift' => self::getCurrentShift($currentRecordTime),
+                    ];
+
+                    // Update lastRecordTime for the next iteration
+                    $lastRecordTime = clone $currentRecordTime;
+                    $lastRecordTime->add(new DateInterval('PT1M')); // Move to the next minute
+                }
+
+                // Fill gaps after the last record up to endDate
+                while ($lastRecordTime <= $endDate) {
+                    // Check if there is no active record already present for this minute
+                    if (!self::hasActiveRecord($lastRecordTime, $records)) {
+                        $resultRecords[] = [
+                            'time' => self::gregorianToJalali_str($lastRecordTime->format('Y-m-d H:i:s')),
+                            'value' => 0, // "silent times" value
+                            'shift' => self::getCurrentShift($lastRecordTime),
+                        ];
+                    }
+                    $lastRecordTime->add(new DateInterval('PT1M'));
+                }
             }
-        }
 
-        // Manually add the end date record if not already added
-        $endFormattedTime = $endDate->format('Y-m-d H:i:s');
-        if (!isset($recordsByTime[$endFormattedTime])) {
-            $result[] = [
-                'value' => 0,
-                'time' => self::gregorianToJalali_str($endFormattedTime),
-                'shift' => self::getCurrentShift($endDate)
-            ];
-        } else {
-            $result[] = $recordsByTime[$endFormattedTime];
+            return $resultRecords; // Return the combined set of fetched records and generated "silent times" records
+        } catch (PDOException $e) {
+            echo "Connection failed: " . $e->getMessage();
+            return []; // Return an empty array on failure
         }
-
-        return $result;
     }
 
-
-
+// Helper function to check if there is an active record present for a given minute
+    private static function hasActiveRecord(DateTime $time, array $records): bool
+    {
+        foreach ($records as $record) {
+            $recordTime = new DateTime($record['time']);
+            if ($time->format('Y-m-d H:i') === $recordTime->format('Y-m-d H:i')) {
+                return true;
+            }
+        }
+        return false;
+    }
 
 
 

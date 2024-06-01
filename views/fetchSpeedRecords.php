@@ -11,13 +11,13 @@ $formattedRecords = [];
 
 foreach ($records as $record) {
     // Determine the value based on the status
-    $value = ($record['status'] == 'silent') ? 0 : $record['value'];
+    $value = $record['value'];
 
     // Construct the new associative array with 'value' and 'time' fields
     $formattedRecord = [
         'value' => $value,
-        'time' => $record['time']
-//        'shift' => $record['shift']
+        'time' => $record['time'],
+        'shift' => $record['shift']
     ];
 
     // Add the formatted record to the new array
