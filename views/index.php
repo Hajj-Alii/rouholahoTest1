@@ -275,8 +275,16 @@ echo "Welcome, " . htmlspecialchars($_SESSION['username']) . "!";
         fetch(`fetchParamRecords.php?startDate=${startDate}&endDate=${endDate}`)
             .then(response => response.json())
             .then(data => {
-                updateTonnageTable(data);
-                saveProductionTonnageState(startDate, endDate, data);  // Save state
+                // Check if data is empty
+                if (data.length === 0) {
+                    // If no records found, show text boxes
+                    showTonnageInputForm(true);
+                } else {
+                    // If records found, update table and hide text boxes
+                    updateTonnageTable(data);
+                    saveProductionTonnageState(startDate, endDate, data);  // Save state
+                    showTonnageInputForm(false);
+                }
             })
             .catch(error => console.error('Error fetching data:', error));
     }
