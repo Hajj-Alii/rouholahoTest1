@@ -102,9 +102,9 @@ echo "Welcome, " . htmlspecialchars($_SESSION['username']) . "!";
             resultDiv.innerHTML = `<p class="text-danger">${data.error}</p>`;
         } else {
             resultDiv.innerHTML = `
-                <p>Active: ${data.shiftActive}</p>
-                <p>Silent: ${data.shiftSilent}</p>
-                <p>Total Tonnage: ${data.shiftParams}</p>
+                <p>دقیقه فعال: ${data.shiftActive}</p>
+                <p>دقیقه خاموش: ${data.shiftSilent}</p>
+                <p>تناژ کل: ${data.shiftParams}</p>
             `;
         }
     }
@@ -197,7 +197,7 @@ echo "Welcome, " . htmlspecialchars($_SESSION['username']) . "!";
         document.getElementById('dateRangeForm').addEventListener('submit', function (event) {
             event.preventDefault();
             fetchAndDisplayTonnageData();
-            fetchAndDisplayTotalTonnage();
+            // fetchAndDisplayTotalTonnage();
 
         });
     }
@@ -205,7 +205,6 @@ echo "Welcome, " . htmlspecialchars($_SESSION['username']) . "!";
     function fetchAndDisplayTonnageData() {
         const startDate = document.getElementById('startDate').value;
         const endDate = document.getElementById('endDate').value;
-
         fetch(`fetchParamRecords.php?startDate=${startDate}&endDate=${endDate}`)
             .then(response => response.json())
             .then(data => {
