@@ -1,5 +1,9 @@
 <div class="container-fluid">
     <div class="row">
+        <div>
+            <h2>عملکرد شیفت ها</h2>
+        </div>
+
         <div class="col-12">
             <form id="shiftPerformanceForm">
                 <div class="form-row">
@@ -11,7 +15,7 @@
                         <label for="endDate">تاریخ پایان:</label>
                         <input type="text" class="form-control" id="endDate" name="endDate" placeholder="تاریخ پایان">
                     </div>
-                    <div class="form-group col-md-4 mb-2">
+                    <div class="form-group col-md-1 mb-2">
                         <label for="shift">شیفت:</label>
                         <select class="form-control" id="shift" name="shift">
                             <option value="A">A</option>

@@ -3,8 +3,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1.0">
-    <link rel="stylesheet" href="../assets/styles/indexStyle.css">
     <link rel="stylesheet" href="../assets/bootstrap/css/bootstrap.css">
+    <link rel="stylesheet" href="../assets/styles/indexStyle.css">
+
     <link rel="stylesheet" href="../node_modules/persian-datepicker/dist/css/persian-datepicker.css">
     <script src="../node_modules/jquery/dist/jquery.js"></script>
     <script src="../node_modules/persian-datepicker/dist/js/persian-datepicker.js"></script>
@@ -53,17 +54,69 @@ echo "Welcome, " . htmlspecialchars($_SESSION['username']) . "!";
                 if (page === 'speedView') {
                     initializeDatePickers();
                     initializeSpeedViewForm();
-                    fetchAndDisplaySpeedData();
+                    loadSpeedViewState();  // Load saved state if available
                 } else if (page === 'productionTonnage') {
                     initializeDatePickers();
                     initializeProductionTonnageForm();
+                    loadProductionTonnageState();  // Load saved state if available
                 } else if (page === 'shiftsPerformance') {
                     initializeDatePickers();
                     initializeShiftPerformanceForm();
+                    loadShiftPerformanceState();  // Load saved state if available
                 }
+
             })
             .catch(error => console.error('Error loading content:', error));
     }
+
+
+    // Save state to localStorage
+    function saveSpeedViewState(startDate, endDate, data) {
+        localStorage.setItem('speedViewState', JSON.stringify({ startDate, endDate, data }));
+    }
+
+    function saveProductionTonnageState(startDate, endDate, data) {
+        localStorage.setItem('productionTonnageState', JSON.stringify({ startDate, endDate, data }));
+    }
+
+    function saveShiftPerformanceState(startDate, endDate, shift, data) {
+        localStorage.setItem('shiftPerformanceState', JSON.stringify({ startDate, endDate, shift, data }));
+    }
+
+    // Load state from localStorage
+    function loadSpeedViewState() {
+        const state = JSON.parse(localStorage.getItem('speedViewState'));
+        if (state) {
+            document.getElementById('startDate').value = state.startDate;
+            document.getElementById('endDate').value = state.endDate;
+            displaySpeedData(state.data);
+        }
+    }
+
+    function displaySpeedData(data) {
+        updateSpeedChart(data);
+        updateSpeedTable(data);
+    }
+
+    function loadProductionTonnageState() {
+        const state = JSON.parse(localStorage.getItem('productionTonnageState'));
+        if (state) {
+            document.getElementById('startDate').value = state.startDate;
+            document.getElementById('endDate').value = state.endDate;
+            updateTonnageTable(state.data);
+        }
+    }
+
+    function loadShiftPerformanceState() {
+        const state = JSON.parse(localStorage.getItem('shiftPerformanceState'));
+        if (state) {
+            document.getElementById('startDate').value = state.startDate;
+            document.getElementById('endDate').value = state.endDate;
+            document.getElementById('shift').value = state.shift;
+            displayShiftPerformanceResult(state.data);
+        }
+    }
+
 
     function initializeDatePickers() {
         $("#startDate, #endDate").pDatepicker({
@@ -83,18 +136,18 @@ echo "Welcome, " . htmlspecialchars($_SESSION['username']) . "!";
         });
     }
 
-    function fetchAndDisplayShiftPerformanceData() {
-        const startDate = document.getElementById('startDate').value;
-        const endDate = document.getElementById('endDate').value;
-        const shift = document.getElementById('shift').value;
-
-        fetch(`fetchShiftPerformance.php?startDate=${startDate}&endDate=${endDate}&shift=${shift}`)
-            .then(response => response.json())
-            .then(data => {
-                displayShiftPerformanceResult(data);
-            })
-            .catch(error => console.error('Error fetching shift performance data:', error));
-    }
+    // function fetchAndDisplayShiftPerformanceData() {
+    //     const startDate = document.getElementById('startDate').value;
+    //     const endDate = document.getElementById('endDate').value;
+    //     const shift = document.getElementById('shift').value;
+    //
+    //     fetch(`fetchShiftPerformance.php?startDate=${startDate}&endDate=${endDate}&shift=${shift}`)
+    //         .then(response => response.json())
+    //         .then(data => {
+    //             displayShiftPerformanceResult(data);
+    //         })
+    //         .catch(error => console.error('Error fetching shift performance data:', error));
+    // }
 
     function displayShiftPerformanceResult(data) {
         const resultDiv = document.getElementById('shiftPerformanceResult');
@@ -115,20 +168,19 @@ echo "Welcome, " . htmlspecialchars($_SESSION['username']) . "!";
         });
     }
 
-    function fetchAndDisplaySpeedData() {
-        const startDate = document.getElementById('startDate').value;
-        const endDate = document.getElementById('endDate').value;
-
-        fetch(`fetchSpeedRecords.php?startDate=${startDate}&endDate=${endDate}`)
-            .then(response => response.json())
-            .then(data => {
-                // console.log(data);
-                updateSpeedChart(data);
-                updateSpeedTable(data);
-            })
-            .catch(error => console.error('Error fetching data:', error));
-    }
-
+    // function fetchAndDisplaySpeedData() {
+    //     const startDate = document.getElementById('startDate').value;
+    //     const endDate = document.getElementById('endDate').value;
+    //
+    //     fetch(`fetchSpeedRecords.php?startDate=${startDate}&endDate=${endDate}`)
+    //         .then(response => response.json())
+    //         .then(data => {
+    //             updateSpeedChart(data);
+    //             updateSpeedTable(data);
+    //             saveSpeedViewState(startDate, endDate, data);  // Save state
+    //         })
+    //         .catch(error => console.error('Error fetching data:', error));
+    // }
     function updateSpeedChart(data) {
         const ctx = document.getElementById('myChart').getContext('2d');
 
@@ -202,18 +254,45 @@ echo "Welcome, " . htmlspecialchars($_SESSION['username']) . "!";
         });
     }
 
+    function fetchAndDisplaySpeedData() {
+        const startDate = document.getElementById('startDate').value;
+        const endDate = document.getElementById('endDate').value;
+
+        fetch(`fetchSpeedRecords.php?startDate=${startDate}&endDate=${endDate}`)
+            .then(response => response.json())
+            .then(data => {
+                updateSpeedChart(data);
+                updateSpeedTable(data);
+                saveSpeedViewState(startDate, endDate, data);  // Save state
+            })
+            .catch(error => console.error('Error fetching data:', error));
+    }
+
     function fetchAndDisplayTonnageData() {
         const startDate = document.getElementById('startDate').value;
         const endDate = document.getElementById('endDate').value;
+
         fetch(`fetchParamRecords.php?startDate=${startDate}&endDate=${endDate}`)
             .then(response => response.json())
             .then(data => {
-
-                console.log(data);
                 updateTonnageTable(data);
-                showTonnageInputForm(data.length === 0);
+                saveProductionTonnageState(startDate, endDate, data);  // Save state
             })
             .catch(error => console.error('Error fetching data:', error));
+    }
+
+    function fetchAndDisplayShiftPerformanceData() {
+        const startDate = document.getElementById('startDate').value;
+        const endDate = document.getElementById('endDate').value;
+        const shift = document.getElementById('shift').value;
+
+        fetch(`fetchShiftPerformance.php?startDate=${startDate}&endDate=${endDate}&shift=${shift}`)
+            .then(response => response.json())
+            .then(data => {
+                displayShiftPerformanceResult(data);
+                saveShiftPerformanceState(startDate, endDate, shift, data);  // Save state
+            })
+            .catch(error => console.error('Error fetching shift performance data:', error));
     }
 
     function updateTonnageTable(data) {

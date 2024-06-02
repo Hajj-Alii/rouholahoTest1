@@ -7,6 +7,9 @@ $records = $ctrl::readAll();
 ?>
 <div class="container">
     <div>
+        <div>
+            <h2>نمایش سرعت</h2>
+        </div>
         <div class="row">
             <div class="col-md-12">
                 <form id="dateRangeForm" class="form-inline">

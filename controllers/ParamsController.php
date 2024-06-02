@@ -54,7 +54,7 @@ class ParamsController{
         $startTime2 = self::jalaliToGregorian_DateTime($startTime);
         $endTime2 = self::jalaliToGregorian_DateTime($endTime);
         if(self::isStartOlder($startTime2, $endTime2))
-            return ParamsModel::selectParams($startTime2, $endTime2);
+            return ParamsModel::selectParams_jalali($startTime2, $endTime2);
         else
             echo "end time {$endTime2->format("Y-m-d H:i:s")} is older than start time {$endTime2->format("Y-m-d H:i:s")}";
 

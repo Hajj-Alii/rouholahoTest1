@@ -4,6 +4,11 @@ require $_SERVER["DOCUMENT_ROOT"] . "/www/rouholahoTest1/controllers/ParamsContr
 ?>
 <div class="container">
     <div class="row">
+
+        <div>
+            <h2>تناژ تولید</h2>
+        </div>
+
         <div class="col-md-12">
             <form id="dateRangeForm" class="form-inline">
                 <div class="form-group mb-2">
