@@ -59,6 +59,44 @@ class ParamsController{
             echo "end time {$endTime2->format("Y-m-d H:i:s")} is older than start time {$endTime2->format("Y-m-d H:i:s")}";
 
     }
+
+    public static function shiftExists($records, $shift)
+    {
+        foreach($records as $record)
+            if(self::getCurrentShift(new DateTime($record['time'])) == $shift)
+                return true;
+        return false;
+
+    }
+
+    public static function getCurrentShift($currentDateTime)
+    {
+        $shiftStartDate = new DateTime('2024-03-20 00:00:00', new DateTimeZone("Asia/Tehran"));
+        $shiftDuration = 12;
+        $interval = $shiftStartDate->diff($currentDateTime);
+        $totalHoursPassed = ($interval->days * 24) + $interval->h + ($interval->i / 60) + ($interval->s / 3600);
+        $shiftIndex = (int)($totalHoursPassed / $shiftDuration) % 3;
+        $shifts = ['A', 'B', 'C'];
+        return $shifts[$shiftIndex];
+    }
+
+
+    public static function getShiftParams($startTime, $endTime, $shift)
+    {
+        $records = ParamsModel::selectParams_gregorian(self::jalaliToGregorian_DateTime($startTime), self::jalaliToGregorian_DateTime($endTime));
+        $totalTonnage = 0;
+        if(self::shiftExists($records, $shift)) {
+            foreach ($records as $record)
+                if (self::getCurrentShift(new DateTime($record['time'])) == $shift)
+                    $totalTonnage += $record['tonnage'];
+            return $totalTonnage;
+        }
+        else
+            return false;
+    }
+
+
+
     public static function calculate_totalTonnage($startTime, $endTime){
         $startTimeGregorian = self::jalaliToGregorian_DateTime($startTime);
         $endTimeGregorian = self::jalaliToGregorian_DateTime($endTime);

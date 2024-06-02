@@ -92,9 +92,21 @@ echo "Welcome, " . htmlspecialchars($_SESSION['username']) . "!";
             .then(response => response.json())
             .then(data => {
                 displayShiftPerformanceResult(data);
-                // displayShiftPerformanceCalculations(data);
             })
             .catch(error => console.error('Error fetching shift performance data:', error));
+    }
+
+    function displayShiftPerformanceResult(data) {
+        const resultDiv = document.getElementById('shiftPerformanceResult');
+        if (data.error) {
+            resultDiv.innerHTML = `<p class="text-danger">${data.error}</p>`;
+        } else {
+            resultDiv.innerHTML = `
+                <p>Active: ${data.shiftActive}</p>
+                <p>Silent: ${data.shiftSilent}</p>
+                <p>Total Tonnage: ${data.shiftParams}</p>
+            `;
+        }
     }
     function initializeSpeedViewForm() {
         document.getElementById('dateRangeForm').addEventListener('submit', function (event) {
