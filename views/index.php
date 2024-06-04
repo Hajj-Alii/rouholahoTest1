@@ -72,15 +72,15 @@ echo "Welcome, " . htmlspecialchars($_SESSION['username']) . "!";
 
     // Save state to localStorage
     function saveSpeedViewState(startDate, endDate, data) {
-        localStorage.setItem('speedViewState', JSON.stringify({ startDate, endDate, data }));
+        localStorage.setItem('speedViewState', JSON.stringify({ startDate, endDate, data}));
     }
 
-    function saveProductionTonnageState(startDate, endDate, data) {
-        localStorage.setItem('productionTonnageState', JSON.stringify({ startDate, endDate, data }));
+    function saveProductionTonnageState(startDate, endDate) {
+        localStorage.setItem('productionTonnageState', JSON.stringify({ startDate, endDate}));
     }
 
-    function saveShiftPerformanceState(startDate, endDate, shift, data) {
-        localStorage.setItem('shiftPerformanceState', JSON.stringify({ startDate, endDate, shift, data }));
+    function saveShiftPerformanceState(startDate, endDate, shift) {
+        localStorage.setItem('shiftPerformanceState', JSON.stringify({ startDate, endDate, shift}));
     }
 
     // Load state from localStorage
@@ -103,7 +103,7 @@ echo "Welcome, " . htmlspecialchars($_SESSION['username']) . "!";
         if (state) {
             document.getElementById('startDate').value = state.startDate;
             document.getElementById('endDate').value = state.endDate;
-            updateTonnageTable(state.data);
+            // updateTonnageTable(state.data);
         }
     }
 
@@ -113,7 +113,7 @@ echo "Welcome, " . htmlspecialchars($_SESSION['username']) . "!";
             document.getElementById('startDate').value = state.startDate;
             document.getElementById('endDate').value = state.endDate;
             document.getElementById('shift').value = state.shift;
-            displayShiftPerformanceResult(state.data);
+            // displayShiftPerformanceResult(state.data);
         }
     }
 
@@ -307,7 +307,7 @@ echo "Welcome, " . htmlspecialchars($_SESSION['username']) . "!";
         const tableBody = document.getElementById('tonnageTable').getElementsByTagName('tbody')[0];
         tableBody.innerHTML = '';
 
-        if (data && Array.isArray(data)) {
+        if (data ) {
             data.forEach(record => {
                 const row = tableBody.insertRow();
                 const cell1 = row.insertCell(0);
@@ -400,7 +400,6 @@ echo "Welcome, " . htmlspecialchars($_SESSION['username']) . "!";
         XLSX.utils.book_append_sheet(wb, ws, 'TonnageRecords');
         XLSX.writeFile(wb, 'tonnage_records.xlsx');
     }
-
 
 </script>
 </body>
