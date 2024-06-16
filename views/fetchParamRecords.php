@@ -7,15 +7,14 @@ $startDate = $_GET['startDate'];
 $endDate = $_GET['endDate'];
 
 try {
-    $records = ParamsController::fetchParams($startDate, $endDate);
+    $result = ParamsController::fetchParams2($startDate, $endDate);
 
-    if (empty($records)) {
-//        echo json_encode(['error' => 'No records found']); // Custom message
-         echo json_encode([]); // Empty array
+    if (empty($result['params'])) {
+        echo json_encode(['params' => [], 'hasSpeedRecords' => $result['hasSpeedRecords']]);
     } else {
-        echo json_encode($records);
+        echo json_encode($result);
     }
 } catch (Exception $e) {
-    // Handle any exceptions and return an error message
     echo json_encode(['error' => $e->getMessage()]);
 }
+

@@ -154,13 +154,18 @@ echo "Welcome, " . htmlspecialchars($_SESSION['username']) . "!";
         if (data.error) {
             resultDiv.innerHTML = `<p class="text-danger">${data.error}</p>`;
         } else {
+            const activeMinutes = data.shiftActive || 0; // Ensure default to 0 if undefined or null
+            const silentMinutes = data.shiftSilent || 0; // Ensure default to 0 if undefined or null
+            const totalTonnage = data.shiftParams || 0; // Ensure default to 0 if undefined or null
+
             resultDiv.innerHTML = `
-                <p>دقیقه فعال: ${data.shiftActive}</p>
-                <p>دقیقه خاموش: ${data.shiftSilent}</p>
-                <p>تناژ کل: ${data.shiftParams}</p>
-            `;
+            <p>دقیقه فعال: ${activeMinutes}</p>
+            <p>دقیقه خاموش: ${silentMinutes}</p>
+            <p>تناژ کل: ${totalTonnage}</p>
+        `;
         }
     }
+
     function initializeSpeedViewForm() {
         document.getElementById('dateRangeForm').addEventListener('submit', function (event) {
             event.preventDefault();
@@ -275,19 +280,33 @@ echo "Welcome, " . htmlspecialchars($_SESSION['username']) . "!";
         fetch(`fetchParamRecords.php?startDate=${startDate}&endDate=${endDate}`)
             .then(response => response.json())
             .then(data => {
-                // Check if data is empty
-                if (data.length === 0) {
-                    // If no records found, show text boxes
-                    showTonnageInputForm(true);
+                if (data.params.length === 0) {
+                    // If no records found, show text boxes if speed records exist
+                    if (data.hasSpeedRecords) {
+                        showTonnageInputForm(true);
+                    } else {
+                        showTonnageInputForm(false);
+                        alert('هیچ رکورد سرعتی برای بازه زمانی داده شده یافت نشد!');
+                    }
                 } else {
                     // If records found, update table and hide text boxes
-                    updateTonnageTable(data);
-                    saveProductionTonnageState(startDate, endDate, data);  // Save state
+                    updateTonnageTable(data.params);
+                    saveProductionTonnageState(startDate, endDate, data.params);  // Save state
                     showTonnageInputForm(false);
                 }
             })
             .catch(error => console.error('Error fetching data:', error));
     }
+
+    function showTonnageInputForm(show) {
+        const form = document.getElementById('tonnageInputForm');
+        if (show) {
+            form.style.display = 'block';
+        } else {
+            form.style.display = 'none';
+        }
+    }
+
 
     function fetchAndDisplayShiftPerformanceData() {
         const startDate = document.getElementById('startDate').value;
@@ -327,9 +346,9 @@ echo "Welcome, " . htmlspecialchars($_SESSION['username']) . "!";
     }
 
 
-    function showTonnageInputForm(show) {
-        document.getElementById('tonnageInputForm').style.display = show ? 'block' : 'none';
-    }
+    // function showTonnageInputForm(show) {
+    //     document.getElementById('tonnageInputForm').style.display = show ? 'block' : 'none';
+    // }
 
 
     function submitTonnageParams() {

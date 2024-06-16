@@ -60,6 +60,21 @@ class ParamsController{
 
     }
 
+    public static function fetchParams2($startTime, $endTime)
+    {
+        $startTime2 = self::jalaliToGregorian_DateTime($startTime);
+        $endTime2 = self::jalaliToGregorian_DateTime($endTime);
+
+        if (self::isStartOlder($startTime2, $endTime2)) {
+            $params = ParamsModel::selectParams_jalali($startTime2, $endTime2);
+            $hasSpeedRecords = ParamsModel::hasSpeedRecords($startTime2, $endTime2);
+            return ['params' => $params, 'hasSpeedRecords' => $hasSpeedRecords];
+        } else {
+            echo "End time {$endTime2->format("Y-m-d H:i:s")} is older than start time {$startTime2->format("Y-m-d H:i:s")}";
+        }
+    }
+
+
     public static function shiftExists($records, $shift)
     {
         foreach($records as $record)

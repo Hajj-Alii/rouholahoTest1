@@ -254,6 +254,7 @@ class SpeedModel
             return []; // Return an empty array on failure
         }
     }
+
     #endregion
     public static function getRecords2(DateTime $startDate, DateTime $endDate)
     {
@@ -322,7 +323,6 @@ class SpeedModel
                     $lastRecordTime->add(new DateInterval('PT1M'));
                 }
             }
-
             return $resultRecords; // Return the combined set of fetched records and generated "silent times" records
         } catch (PDOException $e) {
             echo "Connection failed: " . $e->getMessage();
@@ -341,7 +341,6 @@ class SpeedModel
         }
         return false;
     }
-
 
 
     #region farsi to English nums
@@ -389,8 +388,7 @@ class SpeedModel
             $statement->execute([':startDate' => $startDate->format("Y-m-d H:i:s"), ':endDate' => $endDate->format("Y-m-d H:i:s"), ':shift' => $shift]);
             $records = $statement->fetchAll(PDO::FETCH_ASSOC);
             return $records;
-        }
-        catch (PDOException $exception){
+        } catch (PDOException $exception) {
             echo "Error connection: " . $exception->getMessage();
         }
     }
