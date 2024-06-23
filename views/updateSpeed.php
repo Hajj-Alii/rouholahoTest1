@@ -19,15 +19,14 @@ require $_SERVER["DOCUMENT_ROOT"] . "/www/rouholahoTest1/controllers/SpeedContro
 //}
 
 //var_dump(SpeedModel::getRawRecords(new DateTime("2024-6-01 09:00:00"), new DateTime("2024-6-22 16:00:00")));
-$startDate = "۱۴۰۳/۰۳/۰۱ ۱۳:۳۳:۳۴";
-$endDate = "۱۴۰۳/۰۴/۰۳ ۱۴:۳۲:۰۴";
-$shift = "A";
-$records = SpeedModel::getRecords2(new DateTime("2024-6-21 09:00:00"), new DateTime("2024-6-22 09:00:00"), "all");
+$startDate = "۱۴۰۳/۰۴/۰۲ ۱۴:۱۰:۰۰";
+$endDate = "۱۴۰۳/۰۴/۰۲ ۱۴:۳۰:۰۰";
+$shift = "all";
+//$records = SpeedModel::getRecords2(new DateTime("2024-6-21 09:00:00"), new DateTime("2024-6-22 09:00:00"), "all");
 
 $ctrl = new SpeedController();
 $records2 = $ctrl::fetchRecords_jalaliToGregorian($startDate, $endDate, $shift);
 
-$formattedRecords = [];
 
 //foreach ($records2 as $record) {
 //    $formattedRecord = [
@@ -44,9 +43,12 @@ $formattedRecords = [];
 // Log the number of records fetched
 echo ("Number of records fetched: " . count($records2));
 
+foreach($records2 as $record)
+    var_dump($record);
+
 // Output the encoded JSON (commented out for debugging)
 // echo $encodedRecords;
-var_dump($records2); // Dump for debugging purposes
+//var_dump($records2);
 
 
 ?>

@@ -170,6 +170,7 @@ echo "Welcome, " . htmlspecialchars($_SESSION['username']) . "!";
         const endDate = document.getElementById('endDate').value;
         const shift = document.getElementById('shift').value;
 
+        // Fetch speed data
         fetch(`fetchSpeedRecords.php?startDate=${startDate}&endDate=${endDate}&shift=${shift}`)
             .then(response => {
                 if (!response.ok) {
@@ -178,17 +179,29 @@ echo "Welcome, " . htmlspecialchars($_SESSION['username']) . "!";
                 return response.json();
             })
             .then(data => {
+                console.log('Fetched speed data:', data); // Log the data structure
                 updateSpeedChart(data); // Update speed chart with fetched data
                 updateSpeedTable(data); // Update speed table with fetched data
-                displayShiftPerformanceResult(data);
                 saveSpeedViewState(startDate, endDate, data); // Save state of speed view
+
+                // Fetch shift performance data
+                return fetch(`fetchShiftPerformance.php?startDate=${startDate}&endDate=${endDate}&shift=${shift}`);
+            })
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('Network response was not ok');
+                }
+                return response.json();
+            })
+            .then(data => {
+                console.log('Fetched shift performance data:', data); // Log the data structure
+                displayShiftPerformanceResult(data);
             })
             .catch(error => {
                 console.error('Error fetching data:', error);
                 // Optionally handle errors or display an error message
             });
     }
-
 
     function updateSpeedChart(data) {
         const ctx = document.getElementById('myChart').getContext('2d');

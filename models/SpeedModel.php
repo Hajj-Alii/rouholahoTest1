@@ -383,10 +383,10 @@ class SpeedModel
             }
 
             // Ensure the correct number of records is returned
-            $totalMinutes = $startDate->diff($endDate)->days * 24 * 60 + $startDate->diff($endDate)->h * 60 + $startDate->diff($endDate)->i;
-            while (count($resultRecords) > $totalMinutes + 1) {
-                array_pop($resultRecords);
-            }
+//            $totalMinutes = $startDate->diff($endDate)->days * 24 * 60 + $startDate->diff($endDate)->h * 60 + $startDate->diff($endDate)->i;
+//            while (count($resultRecords) > $totalMinutes + 1) {
+//                array_pop($resultRecords);
+//            }
 
             return $resultRecords; // Return the combined set of fetched records and generated "silent times" records
         } catch (PDOException $e) {
