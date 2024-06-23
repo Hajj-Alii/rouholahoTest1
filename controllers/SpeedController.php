@@ -25,13 +25,30 @@ class SpeedController
     public static function getShiftRecords($startDate, $endDate, $shift)
     {
         $records = SpeedModel::getRecords2(self::jalaliToGregorian_DateTime($startDate), self::jalaliToGregorian_DateTime($endDate), $shift);
-        $report = [];
         $active = $silent = 0;
-        if (self::shiftExists($records, $shift))
-            foreach ($records as $record){
-                if($record['value'] > 0 && $record['shift'] == $shift) $active ++;
-                else $silent ++;
+
+        if ($shift === 'all') {
+            // Calculate active and silent times for all shifts
+            foreach ($records as $record) {
+                if ($record['value'] > 0) {
+                    $active++;
+                } else {
+                    $silent++;
+                }
             }
+        } elseif (self::shiftExists($records, $shift)) {
+            // Calculate active and silent times for a specific shift
+            foreach ($records as $record) {
+                if ($record['shift'] == $shift) {
+                    if ($record['value'] > 0) {
+                        $active++;
+                    } else {
+                        $silent++;
+                    }
+                }
+            }
+        }
+
         return ['active' => $active, 'silent' => $silent];
     }
 

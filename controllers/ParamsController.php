@@ -100,14 +100,24 @@ class ParamsController{
     {
         $records = ParamsModel::selectParams_gregorian(self::jalaliToGregorian_DateTime($startTime), self::jalaliToGregorian_DateTime($endTime));
         $totalTonnage = 0;
-        if(self::shiftExists($records, $shift)) {
-            foreach ($records as $record)
-                if (self::getCurrentShift(new DateTime($record['time'])) == $shift)
-                    $totalTonnage += $record['tonnage'];
+
+        if ($shift === 'all') {
+            // Calculate total tonnage for all shifts
+            foreach ($records as $record) {
+                $totalTonnage += $record['tonnage'];
+            }
             return $totalTonnage;
-        }
-        else
+        } elseif (self::shiftExists($records, $shift)) {
+            // Calculate total tonnage for a specific shift
+            foreach ($records as $record) {
+                if (self::getCurrentShift(new DateTime($record['time'])) == $shift) {
+                    $totalTonnage += $record['tonnage'];
+                }
+            }
+            return $totalTonnage;
+        } else {
             return false;
+        }
     }
 
 
