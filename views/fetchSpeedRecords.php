@@ -4,9 +4,10 @@ require $_SERVER["DOCUMENT_ROOT"] . "/www/rouholahoTest1/controllers/SpeedContro
 
 $startDate = $_GET['startDate'];
 $endDate = $_GET['endDate'];
+$shift = $_GET['shift'];
 
 $ctrl = new SpeedController();
-$records = $ctrl::fetchRecords_jalaliToGregorian($startDate, $endDate);
+$records = $ctrl::fetchRecords_jalaliToGregorian($startDate, $endDate, $shift);
 $formattedRecords = [];
 
 foreach ($records as $record) {

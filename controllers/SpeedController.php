@@ -132,7 +132,6 @@ class SpeedController
         return SpeedModel::getRecords2(self::jalaliToGregorian_DateTime($startDate), self::jalaliToGregorian_DateTime($endDate), $shift);
 //        else
 //            echo "{$endDate->format("Y-m-d H:i:s")} is older than {$startDate->format("Y-m-d H:i:s")}";
-
     }
 
     public static function fetchRecords_gregorian($startDate, $endDate)
