@@ -24,7 +24,7 @@ class SpeedController
 
     public static function getShiftRecords($startDate, $endDate, $shift)
     {
-        $records = SpeedModel::getRecords2(self::jalaliToGregorian_DateTime($startDate), self::jalaliToGregorian_DateTime($endDate));
+        $records = SpeedModel::getRecords2(self::jalaliToGregorian_DateTime($startDate), self::jalaliToGregorian_DateTime($endDate), $shift);
         $report = [];
         $active = $silent = 0;
         if (self::shiftExists($records, $shift))
@@ -149,7 +149,7 @@ class SpeedController
 
     public static function fetchAllRecords()
     {
-        return self::fetchRecords_jalaliToGregorian(SpeedModel::fetchFirstRecord_Time(), self::jalaliToGregorian_DateTime(Jalalian::now(new DateTimeZone("Asia/Tehran"))));
+        return self::fetchRecords_jalaliToGregorian(SpeedModel::fetchFirstRecord_Time(), self::jalaliToGregorian_DateTime(Jalalian::now(new DateTimeZone("Asia/Tehran"))), 'all');
     }
 
 

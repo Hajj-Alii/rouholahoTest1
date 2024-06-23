@@ -44,31 +44,34 @@ echo "Welcome, " . htmlspecialchars($_SESSION['username']) . "!";
         </div>
     </div>
 </div>
-
 <script>
     function showContent(page) {
         fetch(page + '.php')
             .then(response => response.text())
             .then(html => {
                 document.getElementById('content').innerHTML = html;
-                if (page === 'speedView') {
-                    initializeDatePickers();
-                    initializeSpeedViewForm();
-                    loadSpeedViewState();  // Load saved state if available
-                } else if (page === 'productionTonnage') {
-                    initializeDatePickers();
-                    initializeProductionTonnageForm();
-                    loadProductionTonnageState();  // Load saved state if available
-                } else if (page === 'shiftsPerformance') {
-                    initializeDatePickers();
-                    initializeShiftPerformanceForm();
-                    loadShiftPerformanceState();  // Load saved state if available
-                }
+                initializeDatePickers(); // Initialize date pickers for all pages
 
+                switch (page) {
+                    case 'speedView':
+                        initializeSpeedViewForm();
+                        loadSpeedViewState();
+                        break;
+                    case 'productionTonnage':
+                        initializeProductionTonnageForm();
+                        loadProductionTonnageState();
+                        break;
+                    case 'shiftsPerformance':
+                        initializeShiftPerformanceForm();
+                        loadShiftPerformanceState();
+                        break;
+                    default:
+                        console.warn(`Page '${page}' not handled in showContent function.`);
+                        break;
+                }
             })
             .catch(error => console.error('Error loading content:', error));
     }
-
 
     // Save state to localStorage
     function saveSpeedViewState(startDate, endDate, data) {
@@ -113,7 +116,7 @@ echo "Welcome, " . htmlspecialchars($_SESSION['username']) . "!";
             document.getElementById('startDate').value = state.startDate;
             document.getElementById('endDate').value = state.endDate;
             document.getElementById('shift').value = state.shift;
-            // displayShiftPerformanceResult(state.data);
+            displayShiftPerformanceResult(state.data);
         }
     }
 
@@ -129,25 +132,13 @@ echo "Welcome, " . htmlspecialchars($_SESSION['username']) . "!";
             }
         });
     }
+
     function initializeShiftPerformanceForm() {
         document.getElementById('shiftPerformanceForm').addEventListener('submit', function (event) {
             event.preventDefault();
             fetchAndDisplayShiftPerformanceData();
         });
     }
-
-    // function fetchAndDisplayShiftPerformanceData() {
-    //     const startDate = document.getElementById('startDate').value;
-    //     const endDate = document.getElementById('endDate').value;
-    //     const shift = document.getElementById('shift').value;
-    //
-    //     fetch(`fetchShiftPerformance.php?startDate=${startDate}&endDate=${endDate}&shift=${shift}`)
-    //         .then(response => response.json())
-    //         .then(data => {
-    //             displayShiftPerformanceResult(data);
-    //         })
-    //         .catch(error => console.error('Error fetching shift performance data:', error));
-    // }
 
     function displayShiftPerformanceResult(data) {
         const resultDiv = document.getElementById('shiftPerformanceResult');
@@ -167,25 +158,38 @@ echo "Welcome, " . htmlspecialchars($_SESSION['username']) . "!";
     }
 
     function initializeSpeedViewForm() {
+        // Add event listener to the date range form
         document.getElementById('dateRangeForm').addEventListener('submit', function (event) {
             event.preventDefault();
             fetchAndDisplaySpeedData();
         });
     }
 
-    // function fetchAndDisplaySpeedData() {
-    //     const startDate = document.getElementById('startDate').value;
-    //     const endDate = document.getElementById('endDate').value;
-    //
-    //     fetch(`fetchSpeedRecords.php?startDate=${startDate}&endDate=${endDate}`)
-    //         .then(response => response.json())
-    //         .then(data => {
-    //             updateSpeedChart(data);
-    //             updateSpeedTable(data);
-    //             saveSpeedViewState(startDate, endDate, data);  // Save state
-    //         })
-    //         .catch(error => console.error('Error fetching data:', error));
-    // }
+    function fetchAndDisplaySpeedData() {
+        const startDate = document.getElementById('startDate').value;
+        const endDate = document.getElementById('endDate').value;
+        const shift = document.getElementById('shift').value;
+
+        fetch(`fetchSpeedRecords.php?startDate=${startDate}&endDate=${endDate}&shift=${shift}`)
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('Network response was not ok');
+                }
+                return response.json();
+            })
+            .then(data => {
+                updateSpeedChart(data); // Update speed chart with fetched data
+                updateSpeedTable(data); // Update speed table with fetched data
+                displayShiftPerformanceResult(data);
+                saveSpeedViewState(startDate, endDate, data); // Save state of speed view
+            })
+            .catch(error => {
+                console.error('Error fetching data:', error);
+                // Optionally handle errors or display an error message
+            });
+    }
+
+
     function updateSpeedChart(data) {
         const ctx = document.getElementById('myChart').getContext('2d');
 
@@ -233,44 +237,11 @@ echo "Welcome, " . htmlspecialchars($_SESSION['username']) . "!";
         });
     }
 
-    function exportSpeedData() {
-        const table = document.getElementById('speedTable');
-        const rows = Array.from(table.getElementsByTagName('tr'));
-
-        const headers = ['سرعت', 'تاریخ', 'شیفت'];
-        const data = [headers];
-        rows.slice(1).forEach(row => {
-            const cells = Array.from(row.getElementsByTagName('td')).map(td => td.innerText);
-            data.push(cells);
-        });
-
-        const ws = XLSX.utils.aoa_to_sheet(data);
-        const wb = XLSX.utils.book_new();
-        XLSX.utils.book_append_sheet(wb, ws, 'SpeedRecords');
-        XLSX.writeFile(wb, 'speed_records.xlsx');
-    }
-
     function initializeProductionTonnageForm() {
         document.getElementById('dateRangeForm').addEventListener('submit', function (event) {
             event.preventDefault();
             fetchAndDisplayTonnageData();
-            // fetchAndDisplayTotalTonnage();
-
         });
-    }
-
-    function fetchAndDisplaySpeedData() {
-        const startDate = document.getElementById('startDate').value;
-        const endDate = document.getElementById('endDate').value;
-
-        fetch(`fetchSpeedRecords.php?startDate=${startDate}&endDate=${endDate}`)
-            .then(response => response.json())
-            .then(data => {
-                updateSpeedChart(data);
-                updateSpeedTable(data);
-                saveSpeedViewState(startDate, endDate, data);  // Save state
-            })
-            .catch(error => console.error('Error fetching data:', error));
     }
 
     function fetchAndDisplayTonnageData() {
@@ -307,26 +278,11 @@ echo "Welcome, " . htmlspecialchars($_SESSION['username']) . "!";
         }
     }
 
-
-    function fetchAndDisplayShiftPerformanceData() {
-        const startDate = document.getElementById('startDate').value;
-        const endDate = document.getElementById('endDate').value;
-        const shift = document.getElementById('shift').value;
-
-        fetch(`fetchShiftPerformance.php?startDate=${startDate}&endDate=${endDate}&shift=${shift}`)
-            .then(response => response.json())
-            .then(data => {
-                displayShiftPerformanceResult(data);
-                saveShiftPerformanceState(startDate, endDate, shift, data);  // Save state
-            })
-            .catch(error => console.error('Error fetching shift performance data:', error));
-    }
-
     function updateTonnageTable(data) {
         const tableBody = document.getElementById('tonnageTable').getElementsByTagName('tbody')[0];
         tableBody.innerHTML = '';
 
-        if (data ) {
+        if (data) {
             data.forEach(record => {
                 const row = tableBody.insertRow();
                 const cell1 = row.insertCell(0);
@@ -344,30 +300,34 @@ echo "Welcome, " . htmlspecialchars($_SESSION['username']) . "!";
             console.error('Invalid data format:', data);
         }
     }
-
-
-    // function showTonnageInputForm(show) {
-    //     document.getElementById('tonnageInputForm').style.display = show ? 'block' : 'none';
-    // }
-
-
+    // Function to submit tonnage parameters
     function submitTonnageParams() {
         const startDate = document.getElementById('startDate').value;
         const endDate = document.getElementById('endDate').value;
         const width = document.getElementById('width').value;
         const grammage = document.getElementById('grammage').value;
+
         // Validate inputs
         if (!startDate || !endDate || !width || !grammage) {
             alert('Please fill out all fields.');
             return;
         }
 
+        // Prepare payload
+        const payload = {
+            startDate,
+            endDate,
+            width,
+            grammage
+        };
+
+        // Send data to server
         fetch('insertTonnageParams.php', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'
             },
-            body: JSON.stringify({startDate, endDate, width, grammage})
+            body: JSON.stringify(payload)
         })
             .then(response => response.json())
             .then(data => {
@@ -376,33 +336,13 @@ echo "Welcome, " . htmlspecialchars($_SESSION['username']) . "!";
                     alert('Error: ' + data.error);
                 } else {
                     alert(data.message);
-                    fetchAndDisplayTonnageData();
+                    fetchAndDisplayTonnageData(); // Refresh table after successful submission
                 }
             })
             .catch(error => console.error('Error inserting data:', error));
     }
 
-    // function fetchAndDisplayTotalTonnage() {
-    //     const startDate = document.getElementById('startDate').value;
-    //     const endDate = document.getElementById('endDate').value;
-    //
-    //     // Send start and end date/time to backend
-    //     fetch('calculateTotalTonnage.php', {
-    //         method: 'POST',
-    //         headers: {
-    //             'Content-Type': 'application/json'
-    //         },
-    //         body: JSON.stringify({ startDate, endDate })
-    //     })
-    //         .then(response => response.json())
-    //         .then(data => {
-    //             document.getElementById('totalTonnageLabel').textContent = 'Total Tonnage: ' + data.totalTonnage;
-    //             updateTonnageTable(data.records);
-    //             showTonnageInputForm(data.records.length === 0);
-    //         })
-    //         .catch(error => console.error('Error fetching data:', error));
-    // }
-
+    // Function to export tonnage data to Excel
     function exportTonnageData() {
         const table = document.getElementById('tonnageTable');
         const rows = Array.from(table.getElementsByTagName('tr'));
@@ -420,6 +360,27 @@ echo "Welcome, " . htmlspecialchars($_SESSION['username']) . "!";
         XLSX.writeFile(wb, 'tonnage_records.xlsx');
     }
 
+    // Function to export speed data to Excel
+    function exportSpeedData() {
+        const table = document.getElementById('speedTable');
+        const rows = Array.from(table.getElementsByTagName('tr'));
+
+        const headers = ['سرعت', 'تاریخ', 'شیفت'];
+        const data = [headers];
+        rows.slice(1).forEach(row => {
+            const cells = Array.from(row.getElementsByTagName('td')).map(td => td.innerText);
+            data.push(cells);
+        });
+
+        const ws = XLSX.utils.aoa_to_sheet(data);
+        const wb = XLSX.utils.book_new();
+        XLSX.utils.book_append_sheet(wb, ws, 'SpeedRecords');
+        XLSX.writeFile(wb, 'speed_records.xlsx');
+    }
+
+    // Additional functions can be added here as needed
+
 </script>
+
 </body>
 </html>
