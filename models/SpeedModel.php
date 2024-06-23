@@ -154,6 +154,55 @@ class SpeedModel
 
     #endregion
 
+
+    /**
+     * Fetch records from the speed table within a specified date range and shift.
+     *
+     * @param DateTime $startDate Start date and time.
+     * @param DateTime $endDate End date and time.
+     * @param string $shift Shift identifier (A, B, C, or all).
+     * @return array Retrieved records from the database.
+     */
+
+    public static function getRawRecords2(DateTime $startDate, DateTime $endDate, string $shift): array
+    {
+        self::$data = new DataAccess();
+        try {
+            self::$data::connect();
+            $startDateFormatted = $startDate->format("Y-m-d H:i:s");
+            $endDateFormatted = $endDate->format("Y-m-d H:i:s");
+            $executionArray = [
+                ":start_date" => $startDateFormatted,
+                ":end_date" => $endDateFormatted
+            ];
+
+            if (in_array($shift, ["A", "B", "C"])) {
+                $query = "
+                SELECT * FROM testdb1.speed 
+                WHERE time BETWEEN :start_date AND :end_date
+                AND shift = :shift
+            ";
+                $executionArray[":shift"] = $shift;
+            } elseif ($shift === "all") {
+                $query = "
+                SELECT * FROM testdb1.speed 
+                WHERE time BETWEEN :start_date AND :end_date
+            ";
+            } else {
+                return []; // Return an empty array for invalid shift values
+            }
+
+            $statement = self::$data::$pdo->prepare($query);
+            $statement->execute($executionArray);
+            $records = $statement->fetchAll(PDO::FETCH_ASSOC);
+            return $records;
+        } catch (PDOException $exception) {
+            echo "Connection error: " . $exception->getMessage();
+            return []; // Return an empty array on error
+        }
+    }
+
+
     public static function getRawRecords(DateTime $startDate, DateTime $endDate)
     {
         self::$data = new DataAccess();
@@ -256,28 +305,31 @@ class SpeedModel
     }
 
     #endregion
-    public static function getRecords2(DateTime $startDate, DateTime $endDate)
+    public static function getRecords2(DateTime $startDate, DateTime $endDate, $shift)
     {
         self::$data = new DataAccess();
 
         try {
+            // Fetch all records within the date range
             $records = self::getRawRecords($startDate, $endDate);
 
             // Initialize result array
             $resultRecords = [];
-            $lastRecordTime = $startDate;
+            $lastRecordTime = clone $startDate;  // Clone startDate to avoid modifying the original object
 
+            // Generate silent records for the entire range if no records found
             if (empty($records)) {
-                // No records found, fill the entire range with silent records
                 $currentSilentTime = clone $startDate;
                 while ($currentSilentTime <= $endDate) {
-                    // Check if there is no active record already present for this minute
                     if (!self::hasActiveRecord($currentSilentTime, $records)) {
-                        $resultRecords[] = [
-                            'time' => self::gregorianToJalali_str($currentSilentTime->format('Y-m-d H:i:s')),
-                            'value' => 0, // "silent times" value
-                            'shift' => self::getCurrentShift($currentSilentTime),
-                        ];
+                        $silentShift = self::getCurrentShift($currentSilentTime);
+                        if ($shift === 'all' || $shift === $silentShift) {
+                            $resultRecords[] = [
+                                'time' => self::gregorianToJalali_str($currentSilentTime->format('Y-m-d H:i:s')),
+                                'value' => 0, // "silent times" value
+                                'shift' => $silentShift,
+                            ];
+                        }
                     }
                     $currentSilentTime->add(new DateInterval('PT1M')); // Increment by 1 minute
                 }
@@ -287,23 +339,27 @@ class SpeedModel
 
                     // Fill gaps before the first record
                     while ($lastRecordTime < $currentRecordTime) {
-                        // Check if there is no active record already present for this minute
                         if (!self::hasActiveRecord($lastRecordTime, $records)) {
-                            $resultRecords[] = [
-                                'time' => self::gregorianToJalali_str($lastRecordTime->format('Y-m-d H:i:s')),
-                                'value' => 0, // "silent times" value
-                                'shift' => self::getCurrentShift($lastRecordTime),
-                            ];
+                            $silentShift = self::getCurrentShift($lastRecordTime);
+                            if ($shift === 'all' || $shift === $silentShift) {
+                                $resultRecords[] = [
+                                    'time' => self::gregorianToJalali_str($lastRecordTime->format('Y-m-d H:i:s')),
+                                    'value' => 0, // "silent times" value
+                                    'shift' => $silentShift,
+                                ];
+                            }
                         }
                         $lastRecordTime->add(new DateInterval('PT1M'));
                     }
 
-                    // Add the current active record
-                    $resultRecords[] = [
-                        'time' => self::gregorianToJalali_str($record['time']),
-                        'value' => $record['value'],
-                        'shift' => self::getCurrentShift($currentRecordTime),
-                    ];
+                    // Add the current active record if it matches the shift
+                    if ($shift === 'all' || $shift === $record['shift']) {
+                        $resultRecords[] = [
+                            'time' => self::gregorianToJalali_str($record['time']),
+                            'value' => $record['value'],
+                            'shift' => $record['shift'],
+                        ];
+                    }
 
                     // Update lastRecordTime for the next iteration
                     $lastRecordTime = clone $currentRecordTime;
@@ -312,17 +368,26 @@ class SpeedModel
 
                 // Fill gaps after the last record up to endDate
                 while ($lastRecordTime <= $endDate) {
-                    // Check if there is no active record already present for this minute
                     if (!self::hasActiveRecord($lastRecordTime, $records)) {
-                        $resultRecords[] = [
-                            'time' => self::gregorianToJalali_str($lastRecordTime->format('Y-m-d H:i:s')),
-                            'value' => 0, // "silent times" value
-                            'shift' => self::getCurrentShift($lastRecordTime),
-                        ];
+                        $silentShift = self::getCurrentShift($lastRecordTime);
+                        if ($shift === 'all' || $shift === $silentShift) {
+                            $resultRecords[] = [
+                                'time' => self::gregorianToJalali_str($lastRecordTime->format('Y-m-d H:i:s')),
+                                'value' => 0, // "silent times" value
+                                'shift' => $silentShift,
+                            ];
+                        }
                     }
                     $lastRecordTime->add(new DateInterval('PT1M'));
                 }
             }
+
+            // Ensure the correct number of records is returned
+            $totalMinutes = $startDate->diff($endDate)->days * 24 * 60 + $startDate->diff($endDate)->h * 60 + $startDate->diff($endDate)->i;
+            while (count($resultRecords) > $totalMinutes + 1) {
+                array_pop($resultRecords);
+            }
+
             return $resultRecords; // Return the combined set of fetched records and generated "silent times" records
         } catch (PDOException $e) {
             echo "Connection failed: " . $e->getMessage();
