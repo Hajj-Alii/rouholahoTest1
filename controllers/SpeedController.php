@@ -126,10 +126,10 @@ class SpeedController
         return Carbon::createFromTimestamp(Jalalian::fromFormat("Y-m-d H:i:s", $formmatedDate)->getTimestamp());
     }
 
-    public static function fetchRecords_jalaliToGregorian($startDate, $endDate)
+    public static function fetchRecords_jalaliToGregorian($startDate, $endDate, $shift)
     {
 //        if (self::isStartOlder($startDate, $endDate))
-        return SpeedModel::getRecords2(self::jalaliToGregorian_DateTime($startDate), self::jalaliToGregorian_DateTime($endDate));
+        return SpeedModel::getRecords2(self::jalaliToGregorian_DateTime($startDate), self::jalaliToGregorian_DateTime($endDate), $shift);
 //        else
 //            echo "{$endDate->format("Y-m-d H:i:s")} is older than {$startDate->format("Y-m-d H:i:s")}";
 

@@ -18,7 +18,7 @@ require $_SERVER["DOCUMENT_ROOT"] . "/www/rouholahoTest1/controllers/ParamsContr
 //}
 
 //var_dump(SpeedModel::getRawRecords(new DateTime("2024-6-01 09:00:00"), new DateTime("2024-6-22 16:00:00")));
-$records = SpeedModel::getRecords2(new DateTime("2024-6-22 09:00:00"), new DateTime("2024-6-23 09:00:00"), "all");
+$records = SpeedModel::getRecords2(new DateTime("2024-6-22 09:00:00"), new DateTime("2024-6-23 11:00:00"), "B");
 $sum= 0;
 foreach ($records as $record) {
     var_dump($record);
